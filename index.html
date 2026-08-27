@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<meta name="theme-color" content="#FBFAF7">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTA0Ij48IS0tIHRlbGhhZG8gKG1haXMgYWJlcnRvLCBjb21vIG5vIG9yaWdpbmFsKSAtLT4KICA8cGF0aCBkPSJNMTQgNTggTDYwIDI2IEwxMDYgNTgiIHN0cm9rZT0iIzQxM0QzNyIgc3Ryb2tlLXdpZHRoPSIyLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDwhLS0gY2hhbWluw6kgw6AgZGlyZWl0YSAtLT4KICA8cGF0aCBkPSJNODggMzggVjI4IiBzdHJva2U9IiM0MTNEMzciIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIHRyw6pzIGxpbmhhcyBsYXRlcmFpcywgbG9uZ2FzLCBzYWluZG8gZGUgZGVudHJvIGRvIHRlbGhhZG8gLS0+CiAgPHBhdGggZD0iTTMwIDQ5IFY3MiBNMzUuNSA0NiBWNzIgTTQxIDQzIFY3MiIgc3Ryb2tlPSIjNDEzRDM3IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuNyIvPgoKICA8IS0tIGZsb2NvIGRlIG5ldmUgZGV0YWxoYWRvOiA2IGJyYcOnb3MgY29tIGZhcnBhcyBkdXBsYXMgLS0+CiAgPGcgc3Ryb2tlPSIjNDEzRDM3IiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDwhLS0gZWl4b3MgLS0+CiAgICA8cGF0aCBkPSJNNjAgMzggVjc0Ii8+CiAgICA8cGF0aCBkPSJNNDQuNCA0NyBMNzUuNiA2NSIvPgogICAgPHBhdGggZD0iTTc1LjYgNDcgTDQ0LjQgNjUiLz4KCiAgICA8IS0tIGJyYcOnbyBzdXBlcmlvciAtLT4KICAgIDxwYXRoIGQ9Ik02MCA0MyBsLTMuNiAzLjQgTTYwIDQzIGwzLjYgMy40ICBNNjAgNDkgbC0zLjYgMy40IE02MCA0OSBsMy42IDMuNCIvPgogICAgPCEtLSBicmHDp28gaW5mZXJpb3IgLS0+CiAgICA8cGF0aCBkPSJNNjAgNjkgbC0zLjYgLTMuNCBNNjAgNjkgbDMuNiAtMy40ICBNNjAgNjMgbC0zLjYgLTMuNCBNNjAgNjMgbDMuNiAtMy40Ii8+CgogICAgPCEtLSBicmHDp28gc3VwZXJpb3ItZXNxdWVyZG8gKFxcKSAtLT4KICAgIDxwYXRoIGQ9Ik00OS40IDQ5LjkgbC00LjggMC41IE00OS40IDQ5LjkgbC0wLjUgNC44ICBNNTQuNiA1Mi45IGwtNC44IDAuNSBNNTQuNiA1Mi45IGwtMC41IDQuOCIvPgogICAgPCEtLSBicmHDp28gaW5mZXJpb3ItZGlyZWl0byAoXFwpIC0tPgogICAgPHBhdGggZD0iTTcwLjYgNjIuMSBsNC44IC0wLjUgTTcwLjYgNjIuMSBsMC41IC00LjggIE02NS40IDU5LjEgbDQuOCAtMC41IE02NS40IDU5LjEgbDAuNSAtNC44Ii8+CgogICAgPCEtLSBicmHDp28gc3VwZXJpb3ItZGlyZWl0byAoLykgLS0+CiAgICA8cGF0aCBkPSJNNzAuNiA0OS45IGwwLjUgNC44IE03MC42IDQ5LjkgbDQuOCAwLjUgIE02NS40IDUyLjkgbDAuNSA0LjggTTY1LjQgNTIuOSBsNC44IDAuNSIvPgogICAgPCEtLSBicmHDp28gaW5mZXJpb3ItZXNxdWVyZG8gKC8pIC0tPgogICAgPHBhdGggZD0iTTQ5LjQgNjIuMSBsLTAuNSAtNC44IE00OS40IDYyLjEgbC00LjggLTAuNSAgTTU0LjYgNTkuMSBsLTAuNSAtNC44IE01NC42IDU5LjEgbC00LjggLTAuNSIvPgoKICAgIDxjaXJjbGUgY3g9IjYwIiBjeT0iNTYiIHI9IjIuMyIgZmlsbD0iIzQxM0QzNyIgc3Ryb2tlPSJub25lIi8+CiAgPC9nPjwvc3ZnPg==">
+<title>Project Ar — Prancheta</title>
+<meta name="description" content="Projetos técnicos de climatização para obras de alto padrão. São Paulo, capital e interior.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light only;
+  --paper:#FBFAF7;
+  --ink:#514C45;
+  --disp:#413D37;
+  --mute:#A79E92;
+  --line:#E6E1D9;
+  --draw:#C4BCAD;
+  --blue:#8FB0C4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+html{background:var(--paper);-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:'Jost',system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+.se{font-family:'Fraunces',Georgia,serif}
+img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* ===== prancheta ===== */
+.viewport{position:fixed;inset:0;overflow:hidden;cursor:grab;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(120,110,95,.10) 1px, transparent 0) 0 0/26px 26px,
+    var(--paper);
+  touch-action:none;}
+.viewport.grab{cursor:grabbing}
+.world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
+
+.node{position:absolute;transition:filter .5s}
+.ph{width:var(--w);cursor:pointer;filter:saturate(.98)}
+.ph .im{width:100%;aspect-ratio:var(--ar,4/3);overflow:hidden;background:#efece6;box-shadow:0 20px 50px -22px rgba(70,64,56,.4)}
+.ph .im img{transition:transform 1.4s cubic-bezier(.16,0,.2,1)}
+.ph:hover .im img{transform:scale(1.04)}
+.ph .lg{display:flex;justify-content:space-between;gap:12px;padding-top:10px;flex-wrap:wrap}
+.ph .lg span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.ph .lg .nm{color:var(--disp)}
+
+.draw{width:var(--w);opacity:.9}
+.draw .im{width:100%;aspect-ratio:var(--ar,3/4);overflow:hidden;background:#F5F8FB;border:1px solid var(--line)}
+.draw .tag{margin-top:8px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--blue)}
+
+/* anotações */
+.note{width:var(--w,240px)}
+.note .u{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);display:block;margin-bottom:10px}
+.note p{font-size:14px;line-height:1.75;color:var(--ink)}
+.note .lead{width:44px;height:1px;background:var(--draw);margin-bottom:14px}
+
+/* masthead central */
+.mast{width:520px;text-align:left}
+.mast .k{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--mute)}
+.mast h1{font-family:'Fraunces',serif;font-weight:300;font-size:64px;line-height:1.02;letter-spacing:-.01em;color:var(--disp);margin:22px 0}
+.mast h1 em{font-style:italic;font-weight:400}
+.mast .sub{font-size:15px;line-height:1.8;color:var(--ink);max-width:34ch}
+.mast .hint{margin-top:26px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--mute)}
+
+/* ===== interface fixa ===== */
+.hud{position:fixed;z-index:30;pointer-events:none}
+.hud *{pointer-events:auto}
+.top{top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px clamp(18px,4vw,40px)}
+.wm{display:inline-flex;align-items:center;gap:11px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.46em;text-transform:uppercase;color:var(--disp);text-decoration:none;cursor:pointer}
+.wm svg{width:26px;height:23px;flex:none;color:var(--disp)}
+.wm b{font-weight:400}
+.menu{display:flex;gap:26px}
+.menu button{background:none;border:0;cursor:pointer;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);transition:color .4s}
+.menu button:hover{color:var(--disp)}
+@media(max-width:640px){.menu{gap:16px}}
+
+/* controles inferiores */
+.dock{bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:20px clamp(18px,4vw,40px)}
+.coord{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.zoom{display:flex;gap:0;border:1px solid var(--line);background:rgba(251,250,247,.8);backdrop-filter:blur(8px)}
+.zoom button{width:38px;height:34px;border:0;background:none;cursor:pointer;color:var(--disp);font-size:15px;font-family:'Jost',sans-serif}
+.zoom button:middle{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.zoom button+button{border-left:1px solid var(--line)}
+.zoom .fit{font-size:9px;letter-spacing:.16em;text-transform:uppercase;width:auto;padding:0 14px}
+
+/* dica inicial */
+.first{position:fixed;inset:0;z-index:25;display:grid;place-items:center;pointer-events:none}
+.first span{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);background:rgba(251,250,247,.7);backdrop-filter:blur(4px);padding:12px 20px;opacity:0;animation:pop 3.6s ease forwards}
+@keyframes pop{12%{opacity:1}80%{opacity:1}100%{opacity:0}}
+
+/* ===== painéis ===== */
+.panel{position:fixed;inset:0;z-index:50;background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .7s cubic-bezier(.5,0,.15,1);visibility:hidden}
+.panel.open{transform:none;visibility:visible}
+.panel-close{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:20px clamp(18px,4vw,40px);background:rgba(251,250,247,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.panel-close .ttl{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--disp)}
+.panel-close button{background:none;border:0;cursor:pointer;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.pin{padding:clamp(40px,7vw,96px) clamp(18px,4vw,40px)}
+.pin .col{max-width:600px}
+.u{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--mute)}
+.big{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,5vw,3.4rem);line-height:1.14;color:var(--disp);letter-spacing:-.01em}
+.big em{font-style:italic;font-weight:400}
+.pin p{font-size:15px;line-height:1.95;margin-top:18px}
+.pin p+p{margin-top:16px}
+.gap{height:clamp(48px,7vw,96px)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:clamp(28px,4vw,50px);margin-top:clamp(36px,5vw,60px)}
+.wk{text-decoration:none;cursor:pointer}
+.wk .im{aspect-ratio:4/3;overflow:hidden;background:#efece6}
+.wk .im img{transition:transform 1.6s cubic-bezier(.16,0,.2,1)}
+.wk:hover .im img{transform:scale(1.04)}
+.wk .nm{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--disp);margin-top:14px}
+.wk .rt{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);margin-top:6px}
+.wk .ds{font-size:13.5px;margin-top:10px;color:var(--ink)}
+.plain{border-top:1px solid var(--line);margin-top:40px}
+.plain>div{border-bottom:1px solid var(--line);padding:28px 0}
+.plain h3{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--disp);margin-bottom:6px}
+.qa{border-top:1px solid var(--line);margin-top:40px}
+.qa details{border-bottom:1px solid var(--line)}
+.qa summary{list-style:none;cursor:pointer;padding:24px 34px 24px 0;position:relative;font-family:'Fraunces',serif;font-size:1.05rem;color:var(--disp)}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:"+";position:absolute;right:0;top:24px;color:var(--mute)}
+.qa details[open] summary::after{content:"–"}
+.qa p{padding:0 0 26px;font-size:14px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:44px}
+.fi{display:flex;flex-direction:column;gap:9px}.fi.full{grid-column:1/-1}
+.fi label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.fi input,.fi select,.fi textarea{font-family:'Jost',sans-serif;font-size:15px;font-weight:300;color:var(--disp);background:transparent;border:0;border-bottom:1px solid var(--line);padding:11px 0}
+.fi input:focus,.fi select:focus,.fi textarea:focus{outline:none;border-bottom-color:var(--mute)}
+.fi textarea{min-height:84px;resize:vertical}
+.sub{background:none;border:0;border-bottom:1px solid var(--line);padding:0 0 6px;cursor:pointer;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--disp)}
+.info-row{display:flex;flex-wrap:wrap;gap:28px 60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:28px 0;margin-top:12px}
+.info-row a{color:var(--disp);text-decoration:none;border-bottom:1px solid var(--draw)}
+.lk{font-size:10px;letter-spacing:.34em;text-transform:uppercase;text-decoration:none;color:var(--disp);border-bottom:1px solid var(--line);padding-bottom:5px;cursor:pointer}
+@media(max-width:640px){.form{grid-template-columns:1fr;gap:24px}}
+
+.wa{position:fixed;right:18px;bottom:70px;z-index:40;width:50px;height:50px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 4px 16px rgba(81,76,69,.1)}
+.wa svg{width:22px;height:22px;fill:var(--disp)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== PRANCHETA ===== -->
+<div class="viewport" id="vp">
+  <div class="world" id="world">
+
+    <!-- masthead -->
+    <div class="node mast" style="left:1180px;top:820px">
+      <span class="k">Project Ar · Projetos de climatização</span>
+      <h1 class="se">A climatização<br>que <em>não se vê</em>.</h1>
+      <p class="sub">Projetos executivos para obras residenciais de alto padrão, corporativas e comerciais. São Paulo, capital e interior.</p>
+      <p class="hint">↳ Arraste para explorar a prancheta · role para aproximar</p>
+    </div>
+
+    <!-- obras (fotos espalhadas) -->
+    <div class="node ph" style="left:640px;top:430px;--w:440px;transform:rotate(-2deg)" data-open="obras">
+      <div class="im" style="--ar:16/10"><img src="img/sala-jantar-1400.webp" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Estar com difusor linear" decoding="async"></div>
+      <div class="lg"><span class="nm">Haras Larissa</span><span>Monte Mor</span></div>
+    </div>
+
+    <div class="node ph" style="left:1830px;top:470px;--w:360px;transform:rotate(2deg)" data-open="obras">
+      <div class="im" style="--ar:3/4"><img src="img/forro-madeira-1400.webp" srcset="img/forro-madeira-800.webp 800w, img/forro-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Difusor em forro de madeira" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Jardim América</span><span>São Paulo</span></div>
+    </div>
+
+    <div class="node ph" style="left:2010px;top:1180px;--w:300px;transform:rotate(-3deg)" data-open="obras">
+      <div class="im" style="--ar:4/3"><img src="img/suite-1400.webp" srcset="img/suite-800.webp 800w, img/suite-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Suíte com difusor discreto" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Jardim Paulista</span><span>Pace Arq.</span></div>
+    </div>
+
+    <div class="node ph" style="left:470px;top:1120px;--w:340px;transform:rotate(3deg)" data-open="obras">
+      <div class="im" style="--ar:3/4"><img src="img/varanda-madeira-1400.webp" srcset="img/varanda-madeira-800.webp 800w, img/varanda-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Varanda com forro de madeira" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Porto São Pedro</span><span>Porto Feliz</span></div>
+    </div>
+
+    <div class="node ph" style="left:1120px;top:1360px;--w:320px;transform:rotate(-1deg)" data-open="obras">
+      <div class="im" style="--ar:4/3"><img src="img/difusor-linear-1400.webp" srcset="img/difusor-linear-800.webp 800w, img/difusor-linear-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Difusor sobre marcenaria" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Vila Madalena</span><span>Estúdio Cantú</span></div>
+    </div>
+
+    <div class="node ph" style="left:2210px;top:760px;--w:300px;transform:rotate(1.5deg)" data-open="obras">
+      <div class="im" style="--ar:3/4"><img src="img/beiral-madeira-1400.webp" srcset="img/beiral-madeira-800.webp 800w, img/beiral-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Beiral com difusor linear" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Fazenda Boa Vista</span><span>Área externa</span></div>
+    </div>
+
+    <div class="node ph" style="left:250px;top:640px;--w:280px;transform:rotate(2deg)" data-open="obras">
+      <div class="im" style="--ar:3/4"><img src="img/fazenda-boa-vista-800.webp" srcset="img/fazenda-boa-vista-800.webp 800w" sizes="(max-width:640px) 90vw, 440px" alt="Residência Fazenda Boa Vista" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Fazenda Boa Vista</span><span>3.000 m²</span></div>
+    </div>
+
+    <div class="node ph" style="left:1640px;top:1210px;--w:330px;transform:rotate(-2deg)" data-open="obras">
+      <div class="im" style="--ar:4/3"><img src="img/apto-alto-padrao-1400.webp" srcset="img/apto-alto-padrao-800.webp 800w, img/apto-alto-padrao-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Difusores no gesso" loading="lazy" decoding="async"></div>
+      <div class="lg"><span class="nm">Jardim Paulista</span><span>Casa Unique</span></div>
+    </div>
+
+    <!-- recorte de desenho (a camada técnica) -->
+    <div class="node draw" style="left:930px;top:250px;--w:300px;transform:rotate(-4deg)">
+      <div class="im" style="--ar:4/3"><img src="img/tech-sala-jantar-900.webp" srcset="img/tech-sala-jantar-900.webp 900w, img/tech-sala-jantar-1500.webp 1500w" sizes="300px" alt="Recorte da prancha técnica" loading="lazy" decoding="async"></div>
+      <div class="tag">Prancha · UE-1.2 · FXAQ</div>
+    </div>
+
+    <!-- anotações -->
+    <div class="node note" style="left:1500px;top:640px;--w:230px;transform:rotate(1deg)">
+      <div class="lead"></div>
+      <span class="u">Integração</span>
+      <p>O difusor entra no desenho junto com a marcenaria — não depois, no que sobra do forro.</p>
+    </div>
+
+    <div class="node note" style="left:760px;top:960px;--w:220px;transform:rotate(-1deg)">
+      <div class="lead"></div>
+      <span class="u">Escritório</span>
+      <p>Só projeto. A especificação é técnica, não comercial — indicamos a solução certa, não a mais conveniente.</p>
+    </div>
+
+    <div class="node note" style="left:1980px;top:940px;--w:210px;transform:rotate(2deg)">
+      <div class="lead"></div>
+      <span class="u">Método</span>
+      <p>Do cálculo de carga térmica ao As Built. Contrate o escopo completo ou só a etapa que a obra precisa.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- dica inicial -->
+<div class="first"><span>Arraste para explorar</span></div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="top">
+    <a class="wm" onclick="fit()"><svg viewBox="0 0 120 104" aria-hidden="true"><!-- telhado (mais aberto, como no original) -->
+  <path d="M14 58 L60 26 L106 58" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- chaminé à direita -->
+  <path d="M88 38 V28" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- três linhas laterais, longas, saindo de dentro do telhado -->
+  <path d="M30 49 V72 M35.5 46 V72 M41 43 V72" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+
+  <!-- floco de neve detalhado: 6 braços com farpas duplas -->
+  <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- eixos -->
+    <path d="M60 38 V74"/>
+    <path d="M44.4 47 L75.6 65"/>
+    <path d="M75.6 47 L44.4 65"/>
+
+    <!-- braço superior -->
+    <path d="M60 43 l-3.6 3.4 M60 43 l3.6 3.4  M60 49 l-3.6 3.4 M60 49 l3.6 3.4"/>
+    <!-- braço inferior -->
+    <path d="M60 69 l-3.6 -3.4 M60 69 l3.6 -3.4  M60 63 l-3.6 -3.4 M60 63 l3.6 -3.4"/>
+
+    <!-- braço superior-esquerdo (\\) -->
+    <path d="M49.4 49.9 l-4.8 0.5 M49.4 49.9 l-0.5 4.8  M54.6 52.9 l-4.8 0.5 M54.6 52.9 l-0.5 4.8"/>
+    <!-- braço inferior-direito (\\) -->
+    <path d="M70.6 62.1 l4.8 -0.5 M70.6 62.1 l0.5 -4.8  M65.4 59.1 l4.8 -0.5 M65.4 59.1 l0.5 -4.8"/>
+
+    <!-- braço superior-direito (/) -->
+    <path d="M70.6 49.9 l0.5 4.8 M70.6 49.9 l4.8 0.5  M65.4 52.9 l0.5 4.8 M65.4 52.9 l4.8 0.5"/>
+    <!-- braço inferior-esquerdo (/) -->
+    <path d="M49.4 62.1 l-0.5 -4.8 M49.4 62.1 l-4.8 -0.5  M54.6 59.1 l-0.5 -4.8 M54.6 59.1 l-4.8 -0.5"/>
+
+    <circle cx="60" cy="56" r="2.3" fill="currentColor" stroke="none"/>
+  </g></svg><b>Project&nbsp;Ar</b></a>
+    <div class="menu">
+      <button data-panel="obras">Obras</button>
+      <button data-panel="sobre">Escritório</button>
+      <button data-panel="contato">Contato</button>
+    </div>
+  </div>
+  <div class="dock">
+    <span class="coord" id="coord">x0 y0 · 100%</span>
+    <div class="zoom">
+      <button onclick="zoomBy(-1)" aria-label="Afastar">–</button>
+      <button class="fit" onclick="fit()">Ajustar</button>
+      <button onclick="zoomBy(1)" aria-label="Aproximar">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAINEL OBRAS ===== -->
+<div class="panel" id="panel-obras">
+  <div class="panel-close"><span class="ttl">Obras</span><button data-close>Fechar ✕</button></div>
+  <div class="pin">
+    <div class="col"><span class="u">Portfólio</span><p class="big se" style="margin-top:18px">Projetos entregues em São Paulo e região.</p></div>
+    <div class="grid2">
+      <a class="wk"><div class="im"><img src="img/fazenda-boa-vista-800.webp" srcset="img/fazenda-boa-vista-800.webp 800w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista" loading="lazy"></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Lampur Engenharia</div><div class="ds">Residência de altíssimo padrão, 3.000 m². Distribuição por grelhas e difusores lineares integrados à arquitetura.</div></a>
+      <a class="wk"><div class="im"><img src="img/apto-alto-padrao-1400.webp" srcset="img/apto-alto-padrao-800.webp 800w, img/apto-alto-padrao-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo · Casa Unique</div><div class="ds">Apartamento de alto padrão, +1.000 m², equipamentos Daikin e difusores integrados ao projeto.</div></a>
+      <a class="wk"><div class="im"><img src="img/difusor-linear-1400.webp" srcset="img/difusor-linear-800.webp 800w, img/difusor-linear-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Vila Madalena" loading="lazy"></div><div class="nm se">Vila Madalena</div><div class="rt">São Paulo · Estúdio Cantú</div><div class="ds">Executivo com entreforro reduzido, compatível com o pé-direito e a marcenaria.</div></a>
+      <a class="wk"><div class="im"><img src="img/forro-madeira-1400.webp" srcset="img/forro-madeira-800.webp 800w, img/forro-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim América" loading="lazy"></div><div class="nm se">Jardim América</div><div class="rt">São Paulo · D2TECH &amp; Margarita Ferreira</div><div class="ds">Difusores lineares integrados ao forro e às paredes em madeira.</div></a>
+      <a class="wk"><div class="im"><img src="img/beiral-madeira-1400.webp" srcset="img/beiral-madeira-800.webp 800w, img/beiral-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista externa" loading="lazy"></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Triz Engenharia</div><div class="ds">Climatização integrada às áreas sociais, varanda coberta e piscina.</div></a>
+      <a class="wk"><div class="im"><img src="img/varanda-madeira-1400.webp" srcset="img/varanda-madeira-800.webp 800w, img/varanda-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Porto São Pedro" loading="lazy"></div><div class="nm se">Porto São Pedro</div><div class="rt">Porto Feliz · Strix Engenharia</div><div class="ds">Solução compatibilizada com o partido e as grandes aberturas envidraçadas.</div></a>
+      <a class="wk"><div class="im"><img src="img/pe-direito-1400.webp" srcset="img/pe-direito-800.webp 800w, img/pe-direito-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Brooklin" loading="lazy"></div><div class="nm se">Brooklin</div><div class="rt">São Paulo · Strix Engenharia</div><div class="ds">Corporativo, compatibilização de layout, salas de reunião, forro e elétrica.</div></a>
+      <a class="wk"><div class="im"><img src="img/sala-jantar-1400.webp" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Haras Larissa" loading="lazy"></div><div class="nm se">Haras Larissa</div><div class="rt">Monte Mor · Debora Roig</div><div class="ds">Climatização integrada às áreas sociais e ambientes externos cobertos.</div></a>
+      <a class="wk"><div class="im"><img src="img/suite-1400.webp" srcset="img/suite-800.webp 800w, img/suite-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo · Pace Arquitetura</div><div class="ds">Multipavimento com detalhamento de furos em laje, drenos isolados e pontos de força.</div></a>
+    </div>
+    <div class="gap"></div>
+    <a class="lk" data-panel="contato">Solicitar proposta</a>
+  </div>
+</div>
+
+<!-- ===== PAINEL ESCRITÓRIO ===== -->
+<div class="panel" id="panel-sobre">
+  <div class="panel-close"><span class="ttl">Escritório</span><button data-close>Fechar ✕</button></div>
+  <div class="pin">
+    <div class="col"><span class="u">Escritório</span><p class="big se" style="margin-top:18px">Projeto claro é obra <em>sem improviso</em>.</p>
+      <p style="margin-top:26px">A Project Ar atua exclusivamente com projetos técnicos de climatização, com foco em eficiência, compatibilização e viabilidade de execução.</p>
+      <p>Não executamos instalação. Essa separação existe para que a especificação seja técnica, e não comercial — não temos interesse em empurrar uma marca de equipamento.</p>
+      <p>Trabalhamos com arquiteturas, engenharias e gerenciadoras, e também diretamente com o cliente final.</p>
+    </div>
+    <div class="plain">
+      <div><h3>Carga térmica</h3><p>Cálculo ambiente a ambiente, considerando orientação solar, envidraçamento e ocupação real.</p></div>
+      <div><h3>Seleção de equipamento</h3><p>Apoio técnico na escolha do sistema conforme a obra, o mercado e a assistência disponível na região.</p></div>
+      <div><h3>Projeto executivo e compatibilização</h3><p>Traçado de tubulação, dreno, pontos de força e difusores, conferidos contra as demais disciplinas.</p></div>
+      <div><h3>As Built</h3><p>Documentação final do que foi efetivamente executado. Base para manutenção e intervenções futuras.</p></div>
+    </div>
+    <div class="gap"></div>
+    <span class="u">Parcerias</span>
+    <p style="margin-top:16px;max-width:600px">Estúdio Cantú · Casa Unique · Lampur Engenharia · Strix Engenharia · Triz Engenharia · Pace Arquitetura · Debora Roig · D2TECH &amp; Margarita Ferreira</p>
+    <div class="gap"></div>
+    <a class="lk" data-panel="contato">Solicitar proposta</a>
+  </div>
+</div>
+
+<!-- ===== PAINEL CONTATO ===== -->
+<div class="panel" id="panel-contato">
+  <div class="panel-close"><span class="ttl">Contato</span><button data-close>Fechar ✕</button></div>
+  <div class="pin">
+    <div class="col"><span class="u">Contato</span><p class="big se" style="margin-top:18px">Conte sobre a obra.</p>
+      <p style="margin-top:24px">Quanto mais cedo o projeto entra, mais barata e mais limpa fica a solução. Retorno em até 1 dia útil.</p></div>
+    <div class="info-row">
+      <span><span class="u" style="display:block;margin-bottom:6px">WhatsApp</span><a href="https://wa.me/5511963299164" rel="noopener">(11) 96329-9164</a></span>
+      <span><span class="u" style="display:block;margin-bottom:6px">E-mail</span><a href="mailto:matheus@projectarc.com.br">matheus@projectarc.com.br</a></span>
+      <span><span class="u" style="display:block;margin-bottom:6px">Atendimento</span>Seg a sex · 8h–18h</span>
+      <span><span class="u" style="display:block;margin-bottom:6px">Atuação</span>São Paulo — capital e interior</span>
+    </div>
+    <form class="form" id="leadForm">
+      <input type="hidden" name="access_key" value="e3fab427-77d7-4368-9a26-993a08f3f243">
+      <input type="hidden" name="subject" value="Novo contato pelo site — Project Ar">
+      <input type="hidden" name="from_name" value="Site Project Ar">
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+      <div class="fi"><label>Nome</label><input name="nome" autocomplete="name" required></div>
+      <div class="fi"><label>WhatsApp</label><input name="whatsapp" type="tel" autocomplete="tel" required></div>
+      <div class="fi"><label>E-mail</label><input name="email" type="email" autocomplete="email" required></div>
+      <div class="fi"><label>Cidade da obra</label><input name="cidade"></div>
+      <div class="fi"><label>Tipo de obra</label><select name="tipo_de_obra"><option>Residencial</option><option>Apartamento</option><option>Corporativo</option><option>Comercial</option><option>Outro</option></select></div>
+      <div class="fi"><label>Etapa atual</label><select name="etapa"><option>Projeto de arquitetura em andamento</option><option>Obra iniciada</option><option>Obra em acabamento</option><option>Ainda estudando</option></select></div>
+      <div class="fi"><label>Área aproximada</label><select name="area"><option>Até 200 m²</option><option>200 a 500 m²</option><option>500 a 1.000 m²</option><option>Acima de 1.000 m²</option></select></div>
+      <div class="fi"><label>Escopo</label><select name="escopo"><option>Projeto completo</option><option>Somente carga térmica</option><option>Somente executivo</option><option>Somente As Built</option><option>Ainda não sei</option></select></div>
+      <div class="fi full"><label>Detalhes</label><textarea name="mensagem" placeholder="Número de ambientes, se já existe projeto de arquitetura, prazo"></textarea></div>
+      <div class="fi full"><button class="sub" type="submit">Enviar</button></div>
+    </form>
+    <div class="gap"></div>
+    <div class="col"><span class="u">Dúvidas frequentes</span>
+      <div class="qa">
+        <details open><summary>Em que momento da obra devo chamar o projetista?</summary><p>O ideal é junto com o projeto de arquitetura, antes dos forros e da elétrica. Depois do gesso fechado, as opções encolhem e o custo sobe.</p></details>
+        <details><summary>Vocês executam a instalação?</summary><p>Não. Atuamos exclusivamente com projeto, para que a especificação seja técnica e não comercial.</p></details>
+        <details><summary>Atendem fora de São Paulo?</summary><p>Sim. Já entregamos em Porto Feliz, Monte Mor e região, com desenvolvimento remoto e visitas técnicas conforme a obra.</p></details>
+        <details><summary>Trabalham com qual marca?</summary><p>Com todas. A escolha considera desempenho, eficiência e assistência técnica na região.</p></details>
+      </div>
+    </div>
+    <div class="gap"></div>
+    <svg viewBox="0 0 120 104" aria-hidden="true" style="width:40px;height:35px;color:var(--draw);display:block;margin-bottom:16px"><!-- telhado (mais aberto, como no original) -->
+  <path d="M14 58 L60 26 L106 58" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- chaminé à direita -->
+  <path d="M88 38 V28" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- três linhas laterais, longas, saindo de dentro do telhado -->
+  <path d="M30 49 V72 M35.5 46 V72 M41 43 V72" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+
+  <!-- floco de neve detalhado: 6 braços com farpas duplas -->
+  <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- eixos -->
+    <path d="M60 38 V74"/>
+    <path d="M44.4 47 L75.6 65"/>
+    <path d="M75.6 47 L44.4 65"/>
+
+    <!-- braço superior -->
+    <path d="M60 43 l-3.6 3.4 M60 43 l3.6 3.4  M60 49 l-3.6 3.4 M60 49 l3.6 3.4"/>
+    <!-- braço inferior -->
+    <path d="M60 69 l-3.6 -3.4 M60 69 l3.6 -3.4  M60 63 l-3.6 -3.4 M60 63 l3.6 -3.4"/>
+
+    <!-- braço superior-esquerdo (\\) -->
+    <path d="M49.4 49.9 l-4.8 0.5 M49.4 49.9 l-0.5 4.8  M54.6 52.9 l-4.8 0.5 M54.6 52.9 l-0.5 4.8"/>
+    <!-- braço inferior-direito (\\) -->
+    <path d="M70.6 62.1 l4.8 -0.5 M70.6 62.1 l0.5 -4.8  M65.4 59.1 l4.8 -0.5 M65.4 59.1 l0.5 -4.8"/>
+
+    <!-- braço superior-direito (/) -->
+    <path d="M70.6 49.9 l0.5 4.8 M70.6 49.9 l4.8 0.5  M65.4 52.9 l0.5 4.8 M65.4 52.9 l4.8 0.5"/>
+    <!-- braço inferior-esquerdo (/) -->
+    <path d="M49.4 62.1 l-0.5 -4.8 M49.4 62.1 l-4.8 -0.5  M54.6 59.1 l-0.5 -4.8 M54.6 59.1 l-4.8 -0.5"/>
+
+    <circle cx="60" cy="56" r="2.3" fill="currentColor" stroke="none"/>
+  </g></svg>
+    <p style="font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)">Project Ar Projetos Ltda · CNPJ 50.784.117/0001-81 · © 2026</p>
+  </div>
+</div>
+
+<a class="wa" href="https://wa.me/5511963299164" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+</a>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var vp = document.getElementById('vp'),
+      world = document.getElementById('world'),
+      coord = document.getElementById('coord');
+
+  var WORLD_W = 2560, WORLD_H = 1720;
+  var s = 1, tx = 0, ty = 0;                 // estado atual
+  var ts = 1, ttx = 0, tty = 0;              // alvo (para animação suave)
+  var MIN = 0.35, MAX = 1.7;
+  var vX = 0, vY = 0;                          // inércia
+  var dragging = false, moved = 0, lastX = 0, lastY = 0, downX = 0, downY = 0;
+
+  function clamp(v,a,b){ return v<a?a:v>b?b:v; }
+
+  function apply(){
+    world.style.transform = 'translate('+tx+'px,'+ty+'px) scale('+s+')';
+    coord.textContent = 'x'+Math.round(-tx)+' y'+Math.round(-ty)+' · '+Math.round(s*100)+'%';
+  }
+
+  function bound(){
+    var vw = vp.clientWidth, vh = vp.clientHeight;
+    var w = WORLD_W*ts, h = WORLD_H*ts;
+    // permite alguma folga; centraliza se menor que a tela
+    if(w <= vw){ ttx = (vw - w)/2; } else { ttx = clamp(ttx, vw - w - 120, 120); }
+    if(h <= vh){ tty = (vh - h)/2; } else { tty = clamp(tty, vh - h - 120, 120); }
+  }
+
+  function raf(){
+    // suaviza rumo ao alvo
+    s  += (ts  - s )*0.16;
+    tx += (ttx - tx)*0.16;
+    ty += (tty - ty)*0.16;
+    // inércia quando solto
+    if(!dragging){
+      ttx += vX; tty += vY;
+      vX *= 0.92; vY *= 0.92;
+      if(Math.abs(vX)<0.05) vX=0; if(Math.abs(vY)<0.05) vY=0;
+      bound();
+    }
+    apply();
+    requestAnimationFrame(raf);
+  }
+
+  /* ---- ponteiros (mouse + toque) ---- */
+  var pts = new Map(), pinchD = 0, pinchMid = null;
+  vp.addEventListener('pointerdown', function(e){
+    vp.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId, {x:e.clientX,y:e.clientY});
+    if(pts.size===1){ dragging=true; moved=0; lastX=downX=e.clientX; lastY=downY=e.clientY; vX=vY=0; vp.classList.add('grab'); }
+  });
+  vp.addEventListener('pointermove', function(e){
+    if(!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, {x:e.clientX,y:e.clientY});
+    if(pts.size>=2){
+      var a=[...pts.values()]; var d=Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y);
+      var mid={x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2};
+      if(pinchD){ zoomAt(mid.x, mid.y, (d/pinchD)); }
+      pinchD=d; pinchMid=mid; dragging=false;
+      return;
+    }
+    if(dragging){
+      var dx=e.clientX-lastX, dy=e.clientY-lastY;
+      ttx += dx; tty += dy; lastX=e.clientX; lastY=e.clientY;
+      moved += Math.abs(dx)+Math.abs(dy);
+      vX=dx; vY=dy; bound();
+    }
+  });
+  function up(e){
+    pts.delete(e.pointerId);
+    if(pts.size<2) pinchD=0;
+    if(pts.size===0){ dragging=false; vp.classList.remove('grab'); }
+  }
+  vp.addEventListener('pointerup', up);
+  vp.addEventListener('pointercancel', up);
+
+  /* clique em node (só se não arrastou) */
+  vp.addEventListener('click', function(e){
+    if(moved>6) return;
+    var n=e.target.closest('[data-open]');
+    if(n) openPanel(n.getAttribute('data-open'));
+  });
+
+  /* ---- zoom com scroll ---- */
+  vp.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var f = Math.pow(1.0016, -e.deltaY);
+    zoomAt(e.clientX, e.clientY, f);
+  }, {passive:false});
+
+  function zoomAt(cx, cy, f){
+    var ns = clamp(ts*f, MIN, MAX);
+    f = ns/ts;
+    // mantém o ponto sob o cursor fixo
+    ttx = cx - (cx - ttx)*f;
+    tty = cy - (cy - tty)*f;
+    ts = ns; bound();
+  }
+  window.zoomBy = function(dir){
+    var r = vp.getBoundingClientRect();
+    zoomAt(r.width/2, r.height/2, dir>0?1.28:0.78);
+  };
+
+  /* ajustar: enquadra a prancheta inteira */
+  window.fit = function(){
+    var vw=vp.clientWidth, vh=vp.clientHeight;
+    ts = clamp(Math.min(vw/(WORLD_W+240), vh/(WORLD_H+240)), MIN, MAX);
+    ttx = (vw - WORLD_W*ts)/2; tty = (vh - WORLD_H*ts)/2;
+  };
+
+  /* posição inicial: foca o masthead, levemente afastado */
+  function start(){
+    var vw=vp.clientWidth, vh=vp.clientHeight;
+    ts = clamp(Math.min(vw/1500, 1), MIN, MAX);
+    // centro do masthead ~ (1440, 980)
+    ttx = vw*0.5 - 1440*ts;
+    tty = vh*0.5 - 980*ts;
+    s=ts; tx=ttx; ty=tty; apply();
+    if(vw < 720){ setTimeout(fit, 400); }   // no celular já mostra o conjunto
+  }
+
+  /* ---- painéis ---- */
+  function openPanel(id){
+    var p=document.getElementById('panel-'+id);
+    if(p){ p.classList.add('open'); document.body.style.overflow='hidden'; }
+  }
+  function closePanels(){
+    document.querySelectorAll('.panel.open').forEach(function(p){p.classList.remove('open')});
+    document.body.style.overflow='';
+  }
+  window.openPanel = openPanel;
+  document.addEventListener('click', function(e){
+    var b=e.target.closest('[data-panel]');
+    if(b){ openPanel(b.getAttribute('data-panel')); }
+    if(e.target.closest('[data-close]')) closePanels();
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePanels(); });
+
+  start();
+  raf();
+  addEventListener('resize', function(){ bound(); });
+})();
+</script>
+
+
+<script>
+(function(){
+  var f=document.getElementById('leadForm'); if(!f) return;
+  f.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn=f.querySelector('.sub'); var txt=btn.textContent;
+    btn.textContent='Enviando…'; btn.disabled=true;
+    try{
+      var r=await fetch('https://api.web3forms.com/submit',{
+        method:'POST',headers:{'Accept':'application/json'},body:new FormData(f)
+      });
+      var d=await r.json();
+      if(d.success){ f.reset(); btn.textContent='Enviado ✓ retornamos em breve'; }
+      else{ btn.textContent='Erro — tente pelo WhatsApp'; btn.disabled=false; }
+    }catch(_){ btn.textContent='Erro — tente pelo WhatsApp'; btn.disabled=false; }
+    setTimeout(function(){ if(!btn.disabled) return; },0);
+  });
+})();
+</script>
+</body>
+</html>
