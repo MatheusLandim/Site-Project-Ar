@@ -1,0 +1,90 @@
+{
+  "visualBible": {
+    "style": "premium architectural visualization, photorealistic cinematic engineering visualization",
+    "architecture": "contemporary high-end Brazilian architecture",
+    "materials": ["natural stone", "wood", "glass", "concrete", "brushed metal"],
+    "lighting": "soft cinematic architectural lighting, warm champagne accent",
+    "palette": "warm neutral, charcoal, off-white, champagne gold #C9A876 on near-black #0B0A08",
+    "camera": "35mm architectural photography, controlled perspective",
+    "quality": "photorealistic, physically plausible materials, realistic proportions, no text, no logos, no watermark"
+  },
+  "notes": "Site is a single static index.html with no framework/bundler. This manifest documents intent and production method per master; it is not fetched at runtime — <img>/<svg> tags reference the final files directly to avoid an extra request.",
+  "masters": [
+    {
+      "id": "master-01",
+      "name": "Infraestrutura",
+      "purpose": "Historia 1 — abertura da narrativa da Home",
+      "type": "photo-pair",
+      "method": "higgsfield-generated",
+      "aspectRatio": "4:3",
+      "technical": {
+        "prompt": "Elegant architectural cutaway of a contemporary high-end Brazilian residence ceiling void, showing organized HVAC ductwork, distribution boxes and insulated piping above an open slab, engineering visualization not a CAD plan, premium architectural visualization, photorealistic cinematic engineering visualization, contemporary high-end Brazilian architecture, concrete and brushed metal, soft cinematic architectural lighting with warm champagne accent, near-black background, 35mm architectural photography controlled perspective, photorealistic physically plausible materials, no text, no logos, no watermark",
+        "path": "img/hvac/master-01-technical.webp",
+        "status": "generated"
+      },
+      "architectural": {
+        "prompt": "Sophisticated contemporary living room in a high-end Brazilian residence at dusk, warm minimalist interior, a linear diffuser fully integrated and nearly invisible along the ceiling edge, natural stone and wood materials, soft cinematic architectural lighting with warm champagne accent, near-black ambient tones, 35mm architectural photography controlled perspective, photorealistic physically plausible materials, no people, no text, no logos, no watermark",
+        "path": "img/hvac/master-01-architectural.webp",
+        "status": "generated"
+      },
+      "copyA": "Tudo começa antes do forro.",
+      "copyB": "E termina quando a climatização desaparece na arquitetura.",
+      "usedIn": ["home-story-01"]
+    },
+    {
+      "id": "master-02",
+      "name": "Distribuição de ar",
+      "purpose": "Historia 2",
+      "type": "illustration-pair",
+      "method": "svg-authored",
+      "path": "inline <svg> in index.html, #story-02",
+      "copyA": "Conforto também é distribuição.",
+      "usedIn": ["home-story-02"]
+    },
+    {
+      "id": "master-03",
+      "name": "VRV / VRF",
+      "purpose": "Historia 3",
+      "type": "illustration-pair",
+      "method": "svg-authored",
+      "path": "inline <svg> in index.html, #story-03",
+      "copyA": "Alta performance. Baixa presença visual.",
+      "usedIn": ["home-story-03"]
+    },
+    {
+      "id": "master-04",
+      "name": "Difusores e grelhas",
+      "purpose": "Historia 4",
+      "type": "illustration-pair",
+      "method": "svg-authored",
+      "path": "inline <svg> in index.html, #story-04",
+      "copyA": "Quando cada detalhe faz parte do projeto.",
+      "usedIn": ["home-story-04"]
+    },
+    {
+      "id": "master-05",
+      "name": "Arquitetura + engenharia",
+      "purpose": "Historia 5",
+      "type": "illustration-pair",
+      "method": "svg-authored",
+      "path": "inline <svg> in index.html, #story-05",
+      "copyA": "Engenharia que respeita a arquitetura.",
+      "usedIn": ["home-story-05"]
+    },
+    {
+      "id": "master-06",
+      "name": "Sistema completo",
+      "purpose": "Historia 6 — encerramento antes do CTA",
+      "type": "illustration-pair",
+      "method": "svg-authored",
+      "path": "inline <svg> in index.html, #story-06",
+      "copyA": "Climatização projetada para fazer parte do todo.",
+      "usedIn": ["home-story-06"]
+    }
+  ],
+  "reuseDecisions": {
+    "obras-photos": "not reused in Home — kept exclusively as portfolio proof, per section 23",
+    "tech-sala-jantar": "used only as internal style reference for the technical-line vocabulary, not shipped as a Home asset",
+    "existing-method-icons": "the 4 SVG icons already in painel Escritório establish the line-art language reused for masters 02-06"
+  }
+}
