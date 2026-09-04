@@ -63,6 +63,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .xr-photo img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.12);will-change:transform,filter}
 .xr-photo-layer{position:absolute;inset:0;opacity:0;will-change:opacity,-webkit-mask-image,mask-image}
 .xr-photo-layer picture, .xr-photo-layer img{display:block;width:100%;height:100%}
+.xr-photo-layer video{width:100%;height:100%;object-fit:cover;display:block;background:#0B0A08}
 .xr-pin::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;background:linear-gradient(to top, var(--bg) 0%, rgba(11,10,8,.72) 38%, transparent 100%)}
 .xr-text{position:absolute;left:0;right:0;bottom:clamp(50px,9vh,100px);z-index:5;text-align:center;padding:0 var(--m);pointer-events:none}
 .xr-text .box{max-width:620px;margin:0 auto}
@@ -161,35 +162,18 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
   <section class="experience" id="experience01">
     <div class="xr-pin" id="xrPin01">
-      <canvas id="duct-canvas01" class="duct-canvas" aria-hidden="true"></canvas>
       <div class="xr-photo" id="xrPhoto01" aria-hidden="true">
         <div class="xr-photo-layer" data-stage="1">
-          <picture>
-            <source type="image/avif" sizes="100vw" srcset="img/hvac01-900.avif 900w, img/hvac01-1400.avif 1400w, img/hvac01-2400.avif 2400w">
-            <source type="image/webp" sizes="100vw" srcset="img/hvac01-900.webp 900w, img/hvac01-1400.webp 1400w, img/hvac01-2400.webp 2400w">
-            <img src="img/hvac01-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
+          <video muted loop playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="2">
-          <picture>
-            <source type="image/avif" sizes="100vw" srcset="img/hvac02-900.avif 900w, img/hvac02-1400.avif 1400w, img/hvac02-2400.avif 2400w">
-            <source type="image/webp" sizes="100vw" srcset="img/hvac02-900.webp 900w, img/hvac02-1400.webp 1400w, img/hvac02-2400.webp 2400w">
-            <img src="img/hvac02-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
+          <video muted loop playsinline preload="auto" poster="img/hvac02-1400.webp"><source src="video/hvac02.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="3">
-          <picture>
-            <source type="image/avif" sizes="100vw" srcset="img/hvac03-900.avif 900w, img/hvac03-1400.avif 1400w, img/hvac03-2400.avif 2400w">
-            <source type="image/webp" sizes="100vw" srcset="img/hvac03-900.webp 900w, img/hvac03-1400.webp 1400w, img/hvac03-2400.webp 2400w">
-            <img src="img/hvac03-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
+          <video muted loop playsinline preload="auto" poster="img/hvac03-1400.webp"><source src="video/hvac03.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="4">
-          <picture>
-            <source type="image/avif" sizes="100vw" srcset="img/hvac04-900.avif 900w, img/hvac04-1400.avif 1400w, img/hvac04-2400.avif 2400w">
-            <source type="image/webp" sizes="100vw" srcset="img/hvac04-900.webp 900w, img/hvac04-1400.webp 1400w, img/hvac04-2400.webp 2400w">
-            <img src="img/hvac04-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
+          <video muted loop playsinline preload="auto" poster="img/hvac04-1400.webp"><source src="video/hvac04.mp4" type="video/mp4"></video>
         </div>
       </div>
       <div class="xr-text">
@@ -446,6 +430,29 @@ function initXrayExperience(){
   var libsOK = typeof THREE!=='undefined' && typeof gsap!=='undefined' && typeof ScrollTrigger!=='undefined';
 
   function smooth(x,a,b){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
+
+  /* sequência de 4 estágios (foto ou vídeo): cada camada entra com máscara
+     em íris + settle de zoom e some em crossfade conforme a próxima assume,
+     com blur controlado no meio da troca — usado tanto no reveal final da
+     cena com 3D (a partir de cfg.photoStart) quanto na cena 100% em vídeo. */
+  function applyPhotoStages(photoLayers, u){
+    var b1=0.32, b2=0.62, b3=0.85, mw=0.09;
+    var r2 = smooth(u,b1-mw,b1+mw), r3 = smooth(u,b2-mw,b2+mw), r4 = smooth(u,b3-mw,b3+mw);
+    var rises = [1, r2, r3, r4];
+    var ops = [1-r2, r2-r3, r3-r4, r4];
+    for(var li=0; li<photoLayers.length; li++){
+      var layer = photoLayers[li];
+      var op = ops[li], rise = rises[li];
+      layer.style.opacity = op;
+      layer.style.transform = 'scale('+(1.07-0.07*rise)+')';
+      var blurAmt = 4*op*(1-op) * (li>=2?11:6);
+      layer.style.filter = blurAmt>0.05 ? 'blur('+blurAmt.toFixed(2)+'px)' : 'none';
+      var maskR = 18 + rise*70;
+      var maskCss = 'radial-gradient(circle at 50% 46%, #000 '+(maskR-25)+'%, transparent '+maskR+'%)';
+      layer.style.webkitMaskImage = maskCss;
+      layer.style.maskImage = maskCss;
+    }
+  }
   function v3(a){ return new THREE.Vector3(a[0],a[1],a[2]); }
 
   /* ---------- materiais e texturas compartilhados ---------- */
@@ -854,71 +861,6 @@ function initXrayExperience(){
   }
 
   /* ---------- EXPERIÊNCIA 01 — residencial: duto circular + sala de estar ---------- */
-  function buildResidential(THREE, group, isMobile){
-    var ductMat = matV(0xC7C2B6, 0.74, 0.3);
-    var flangeMat = matV(0x1c1813, 0.6, 0.42);
-    var plenumMat = matV(0x3a352c, 0.55, 0.45);
-    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.85);
-    var frameMat = matV(0xC9C2B0, 0.78, 0.26);
-    var slatMat = matTexV(slotTexture(), 0.28, 0.58);
-
-    var trunkPts = [[-3.2,0.35,-0.3],[-1.5,0.42,0.25],[0,0.3,-0.15],[1.6,0.4,0.3],[3.2,0.32,-0.2]].map(v3);
-    var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(trunkCurve, isMobile?40:72, 0.17, 12, false), ductMat));
-
-    var flangeSteps = isMobile ? [0.22,0.5,0.78] : [0.1,0.3,0.5,0.7,0.9];
-    flangeSteps.forEach(function(t){
-      flangeRound(group, trunkCurve.getPointAt(t), trunkCurve.getTangentAt(t), 0.17, flangeMat);
-    });
-
-    for(var s=0.1; s<1; s+=0.22){
-      hangerBracket(group, trunkCurve.getPointAt(s), hangerMat);
-    }
-
-    var branchData = [];
-    [0.28,0.55,0.82].forEach(function(t,i){
-      var basePt = trunkCurve.getPointAt(t);
-      var side = (i%2===0)?1:-1;
-      var dropPt = new THREE.Vector3(basePt.x+side*0.15, basePt.y-0.55, basePt.z+0.9);
-      var bc = new THREE.CatmullRomCurve3([basePt.clone(), basePt.clone().lerp(dropPt,0.45).add(new THREE.Vector3(0,-0.05,0)), dropPt.clone()]);
-      group.add(new THREE.Mesh(new THREE.TubeGeometry(bc, isMobile?14:24, 0.08, 8, false), ductMat));
-
-      var takeoffDir = dropPt.clone().sub(basePt).normalize();
-      var redEnd = basePt.clone().add(takeoffDir.multiplyScalar(0.16));
-      reducerRound(group, basePt, redEnd, 0.09, 0.16, plenumMat, flangeMat);
-
-      var plenum = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.16,0.26), plenumMat);
-      plenum.position.copy(dropPt).add(new THREE.Vector3(0,-0.1,0.15));
-      group.add(plenum);
-
-      var diffCenter = plenum.position.clone().add(new THREE.Vector3(0,-0.11,0.16));
-      linearDiffuser(group, diffCenter, 0.62, 0.15, frameMat, slatMat, isMobile?4:6);
-
-      branchData.push({side:side, plenum:plenum.position.clone(), diffuser:diffCenter});
-    });
-
-    var ceilingY = branchData[1].diffuser.y;
-    var room = buildRoom(THREE, group, {w:7.5, d:6, h:2.4, ceilingY:ceilingY, wallColor:0x2a2118, floorColor:'#5a3f28'});
-    var furn = furnishLiving(THREE, group, room.floorY);
-
-    var tourPts = branchData.map(function(b){
-      return { pos: b.plenum.clone().add(new THREE.Vector3(b.side*0.35,0.4,0.85)), look: b.diffuser.clone() };
-    });
-
-    return {
-      roomMats: room.mats.concat(furn),
-      daylight: room.daylight,
-      growWalls: room.growWalls,
-      planPos: room.planPos,
-      planLook: room.planLook,
-      closePos: new THREE.Vector3(0.2, 0.5, 1.6),
-      closeLook: trunkCurve.getPointAt(0.5),
-      establishPos: new THREE.Vector3(0.3, room.floorY+1.9, 6.0),
-      establishLook: new THREE.Vector3(0, room.floorY+0.85, 1.4),
-      tourPts: tourPts
-    };
-  }
-
   /* ---------- EXPERIÊNCIA 02 — apartamento: caixa de distribuição + VRF + jantar ---------- */
   function buildApartment(THREE, group, isMobile){
     var boxMat = matV(0x3a352c, 0.6, 0.4);
@@ -1177,22 +1119,7 @@ function initXrayExperience(){
                  conforme a próxima assume, com um leve blur controlado no
                  meio da troca — preserva a sensação de que o mesmo projeto
                  HVAC se tornou o ambiente final. */
-              var b1=0.32, b2=0.62, b3=0.85, mw=0.09;
-              var r2 = smooth(photoT,b1-mw,b1+mw), r3 = smooth(photoT,b2-mw,b2+mw), r4 = smooth(photoT,b3-mw,b3+mw);
-              var rises = [1, r2, r3, r4];
-              var ops = [1-r2, r2-r3, r3-r4, r4];
-              for(var li=0; li<photoLayers.length; li++){
-                var layer = photoLayers[li];
-                var op = ops[li], rise = rises[li];
-                layer.style.opacity = op;
-                layer.style.transform = 'scale('+(1.07-0.07*rise)+')';
-                var blurAmt = 4*op*(1-op) * (li>=2?11:6);
-                layer.style.filter = blurAmt>0.05 ? 'blur('+blurAmt.toFixed(2)+'px)' : 'none';
-                var maskR = 18 + rise*70;
-                var maskCss = 'radial-gradient(circle at 50% 46%, #000 '+(maskR-25)+'%, transparent '+maskR+'%)';
-                layer.style.webkitMaskImage = maskCss;
-                layer.style.maskImage = maskCss;
-              }
+              applyPhotoStages(photoLayers, photoT);
             } else if(photoImg){
               photoImg.style.transform = 'scale('+(1.12-0.12*photoT)+')';
               photoImg.style.filter = 'brightness('+(0.86+0.14*photoT)+') saturate('+(0.88+0.12*photoT)+')';
@@ -1243,14 +1170,76 @@ function initXrayExperience(){
     doMount();
   }
 
-  if(webglOK && libsOK){
+  /* ---------- motor da cena 100% em vídeo (substitui a modelagem 3D dos
+     dutos por 4 clipes gerados via Higgsfield, na mesma linguagem visual
+     de crossfade/máscara/blur já usada no reveal final das outras cenas) ---------- */
+  function mountVideoSequence(cfg){
+    var expEl = document.getElementById('experience'+cfg.id);
+    var pinEl = document.getElementById('xrPin'+cfg.id);
+    var fallbackEl = document.getElementById('fallback'+cfg.id);
+    var photoEl = document.getElementById('xrPhoto'+cfg.id);
+    if(!expEl || !pinEl || !photoEl) return;
+
+    function fallback(){
+      expEl.style.display = 'none';
+      if(fallbackEl) fallbackEl.hidden = false;
+    }
+    if(!libsOK){ fallback(); return; }
+
+    var photoLayers = photoEl.querySelectorAll('.xr-photo-layer');
+    if(!photoLayers.length){ fallback(); return; }
+
+    var tagEl = document.getElementById('xrTag'+cfg.id);
+    var lineEl = document.getElementById('xrLine'+cfg.id);
+    var cueEl = document.getElementById('xrCue'+cfg.id);
+
+    photoEl.style.opacity = 1;
+
+    if(!reduceMotion){
+      photoLayers.forEach(function(layer){
+        var v = layer.querySelector('video');
+        if(v) v.play().catch(function(){});
+      });
+    }
+
+    var curPhase = -1;
+    function setPhase(i){
+      if(i===curPhase) return;
+      curPhase = i;
+      tagEl.style.opacity = 0;
+      lineEl.style.opacity = 0;
+      setTimeout(function(){
+        tagEl.textContent = cfg.tags[i];
+        lineEl.innerHTML = cfg.lines[i];
+        tagEl.style.opacity = 1;
+        lineEl.style.opacity = 1;
+      }, 200);
+    }
+    setPhase(0);
+
+    function updateProgress(p){
+      applyPhotoStages(photoLayers, p);
+      setPhase(p < 0.5 ? 0 : 1);
+      cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
+    }
+
+    var st = ScrollTrigger.create({
+      trigger: expEl,
+      start: 'top top',
+      end: 'bottom bottom',
+      pin: pinEl,
+      scrub: 0.6,
+      onUpdate: function(self){ updateProgress(self.progress); }
+    });
+    updateProgress(st.progress || 0);
+  }
+
+  if(libsOK){
     gsap.registerPlugin(ScrollTrigger);
   }
 
-  mountXray({
+  mountVideoSequence({
     id: '01',
-    build: buildResidential,
-    photoStart: 0.68,
     tags: ['Projeto · Residência', 'Resultado · Residência'],
     lines: [
       'Engenharia que começa <em>antes</em> da obra.',
