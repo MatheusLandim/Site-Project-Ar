@@ -61,6 +61,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .duct-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block;will-change:opacity,filter}
 .xr-photo{position:absolute;inset:0;z-index:2;overflow:hidden;opacity:0;pointer-events:none;will-change:opacity}
 .xr-photo img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.12);will-change:transform,filter}
+.xr-photo-layer{position:absolute;inset:0;opacity:0;will-change:opacity,-webkit-mask-image,mask-image}
+.xr-photo-layer picture, .xr-photo-layer img{display:block;width:100%;height:100%}
 .xr-pin::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;background:linear-gradient(to top, var(--bg) 0%, rgba(11,10,8,.72) 38%, transparent 100%)}
 .xr-text{position:absolute;left:0;right:0;bottom:clamp(50px,9vh,100px);z-index:5;text-align:center;padding:0 var(--m);pointer-events:none}
 .xr-text .box{max-width:620px;margin:0 auto}
@@ -161,13 +163,34 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     <div class="xr-pin" id="xrPin01">
       <canvas id="duct-canvas01" class="duct-canvas" aria-hidden="true"></canvas>
       <div class="xr-photo" id="xrPhoto01" aria-hidden="true">
-        <picture>
-          <source media="(max-width:760px)" type="image/avif" sizes="100vw" srcset="img/res-mobile-800.avif 800w, img/res-mobile-1400.avif 1400w">
-          <source media="(max-width:760px)" type="image/webp" sizes="100vw" srcset="img/res-mobile-800.webp 800w, img/res-mobile-1400.webp 1400w">
-          <source type="image/avif" sizes="100vw" srcset="img/res-desktop-1400.avif 1400w, img/res-desktop-2400.avif 2400w">
-          <source type="image/webp" sizes="100vw" srcset="img/res-desktop-1400.webp 1400w, img/res-desktop-2400.webp 2400w">
-          <img src="img/res-desktop-1400.webp" alt="" loading="lazy" decoding="async">
-        </picture>
+        <div class="xr-photo-layer" data-stage="1">
+          <picture>
+            <source type="image/avif" sizes="100vw" srcset="img/hvac01-900.avif 900w, img/hvac01-1400.avif 1400w, img/hvac01-2400.avif 2400w">
+            <source type="image/webp" sizes="100vw" srcset="img/hvac01-900.webp 900w, img/hvac01-1400.webp 1400w, img/hvac01-2400.webp 2400w">
+            <img src="img/hvac01-1400.webp" alt="" loading="lazy" decoding="async">
+          </picture>
+        </div>
+        <div class="xr-photo-layer" data-stage="2">
+          <picture>
+            <source type="image/avif" sizes="100vw" srcset="img/hvac02-900.avif 900w, img/hvac02-1400.avif 1400w, img/hvac02-2400.avif 2400w">
+            <source type="image/webp" sizes="100vw" srcset="img/hvac02-900.webp 900w, img/hvac02-1400.webp 1400w, img/hvac02-2400.webp 2400w">
+            <img src="img/hvac02-1400.webp" alt="" loading="lazy" decoding="async">
+          </picture>
+        </div>
+        <div class="xr-photo-layer" data-stage="3">
+          <picture>
+            <source type="image/avif" sizes="100vw" srcset="img/hvac03-900.avif 900w, img/hvac03-1400.avif 1400w, img/hvac03-2400.avif 2400w">
+            <source type="image/webp" sizes="100vw" srcset="img/hvac03-900.webp 900w, img/hvac03-1400.webp 1400w, img/hvac03-2400.webp 2400w">
+            <img src="img/hvac03-1400.webp" alt="" loading="lazy" decoding="async">
+          </picture>
+        </div>
+        <div class="xr-photo-layer" data-stage="4">
+          <picture>
+            <source type="image/avif" sizes="100vw" srcset="img/hvac04-900.avif 900w, img/hvac04-1400.avif 1400w, img/hvac04-2400.avif 2400w">
+            <source type="image/webp" sizes="100vw" srcset="img/hvac04-900.webp 900w, img/hvac04-1400.webp 1400w, img/hvac04-2400.webp 2400w">
+            <img src="img/hvac04-1400.webp" alt="" loading="lazy" decoding="async">
+          </picture>
+        </div>
       </div>
       <div class="xr-text">
         <div class="box">
@@ -1047,7 +1070,8 @@ function initXrayExperience(){
         var isMobile = matchMedia('(max-width:760px)').matches;
         var canvas = document.getElementById('duct-canvas'+cfg.id);
         var photoEl = document.getElementById('xrPhoto'+cfg.id);
-        var photoImg = photoEl ? photoEl.querySelector('img') : null;
+        var photoLayers = photoEl ? photoEl.querySelectorAll('.xr-photo-layer') : [];
+        var photoImg = (photoEl && !photoLayers.length) ? photoEl.querySelector('img') : null;
         var tagEl = document.getElementById('xrTag'+cfg.id);
         var lineEl = document.getElementById('xrLine'+cfg.id);
         var cueEl = document.getElementById('xrCue'+cfg.id);
@@ -1137,18 +1161,42 @@ function initXrayExperience(){
           cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
 
           /* transição cinematográfica final: a cena 3D perde foco e some
-             (blur + dissolve) enquanto o ambiente fotorrealista assume,
-             ainda com um leve settle de zoom e grade de cor — nunca um
-             corte seco nem um fade plano. */
+             (blur + dissolve) enquanto o(s) render(es) fotorrealista(s)
+             assume(m) — nunca um corte seco nem um fade plano. */
           if(photoEl){
-            var photoT = smooth(p, 0.84, 1);
+            var photoStart = cfg.photoStart || 0.84;
+            var photoT = smooth(p, photoStart, 1);
             photoEl.style.opacity = photoT;
-            if(photoImg){
+            canvas.style.opacity = 1-photoT;
+            canvas.style.filter = photoT>0 ? 'blur('+(photoT*9)+'px)' : 'none';
+
+            if(photoLayers.length){
+              /* sequência de 4 estágios (projeto HVAC → obra em andamento →
+                 acabamento quase pronto → ambiente final): cada imagem entra
+                 com máscara em íris + settle de zoom e some em crossfade
+                 conforme a próxima assume, com um leve blur controlado no
+                 meio da troca — preserva a sensação de que o mesmo projeto
+                 HVAC se tornou o ambiente final. */
+              var b1=0.32, b2=0.62, b3=0.85, mw=0.09;
+              var r2 = smooth(photoT,b1-mw,b1+mw), r3 = smooth(photoT,b2-mw,b2+mw), r4 = smooth(photoT,b3-mw,b3+mw);
+              var rises = [1, r2, r3, r4];
+              var ops = [1-r2, r2-r3, r3-r4, r4];
+              for(var li=0; li<photoLayers.length; li++){
+                var layer = photoLayers[li];
+                var op = ops[li], rise = rises[li];
+                layer.style.opacity = op;
+                layer.style.transform = 'scale('+(1.07-0.07*rise)+')';
+                var blurAmt = 4*op*(1-op) * (li>=2?11:6);
+                layer.style.filter = blurAmt>0.05 ? 'blur('+blurAmt.toFixed(2)+'px)' : 'none';
+                var maskR = 18 + rise*70;
+                var maskCss = 'radial-gradient(circle at 50% 46%, #000 '+(maskR-25)+'%, transparent '+maskR+'%)';
+                layer.style.webkitMaskImage = maskCss;
+                layer.style.maskImage = maskCss;
+              }
+            } else if(photoImg){
               photoImg.style.transform = 'scale('+(1.12-0.12*photoT)+')';
               photoImg.style.filter = 'brightness('+(0.86+0.14*photoT)+') saturate('+(0.88+0.12*photoT)+')';
             }
-            canvas.style.opacity = 1-photoT;
-            canvas.style.filter = photoT>0 ? 'blur('+(photoT*9)+'px)' : 'none';
           }
 
           renderer.render(scene, camera);
@@ -1202,6 +1250,7 @@ function initXrayExperience(){
   mountXray({
     id: '01',
     build: buildResidential,
+    photoStart: 0.68,
     tags: ['Projeto · Residência', 'Resultado · Residência'],
     lines: [
       'Engenharia que começa <em>antes</em> da obra.',
