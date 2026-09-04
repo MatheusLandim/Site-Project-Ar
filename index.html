@@ -399,6 +399,11 @@ function initXrayExperience(){
   /* ---------- materiais e texturas compartilhados ---------- */
   function mat(color,m,r){ return new THREE.MeshStandardMaterial({color:color, metalness:m, roughness:r, transparent:true, opacity:0}); }
   function matTex(tex,m,r){ return new THREE.MeshStandardMaterial({map:tex, metalness:m, roughness:r, transparent:true, opacity:0}); }
+  /* material "sempre visível": rede HVAC e plano arquitetônico ficam presentes
+     desde o quadro inicial — o que revela/oculta depois é a oclusão real do
+     forro (3D), não um fade de opacidade do próprio duto. */
+  function matV(color,m,r,op){ var mm = mat(color,m,r); mm.opacity = op==null?0.96:op; return mm; }
+  function matTexV(tex,m,r,op){ var mm = matTex(tex,m,r); mm.opacity = op==null?0.96:op; return mm; }
 
   var texCache = {};
   function slotTexture(){
@@ -471,9 +476,15 @@ function initXrayExperience(){
     return texCache[key];
   }
 
+  /* sala 3D compartilhada — envelope arquitetônico real, não uma foto.
+     Paredes e piso existem desde o primeiro quadro, como planta técnica
+     esquemática (baixas, tom neutro de projeto); crescem em altura e ganham
+     material nobre conforme o scroll avança (growWalls). Teto/sanca/janela/
+     esquadria só aparecem depois — quando o teto fica opaco, ele OCLUI a
+     rede HVAC de verdade (profundidade 3D real), sem precisar apagar o duto. */
   function buildRoom(THREE, group, cfg){
-    var wallMat = mat(cfg.wallColor, 0.08, 0.88); wallMat.side = THREE.DoubleSide;
-    var floorMat = matTex(woodTexture(cfg.floorColor), 0.12, 0.7); floorMat.side = THREE.DoubleSide;
+    var wallMat = mat(cfg.wallColor, 0.08, 0.88); wallMat.side = THREE.DoubleSide; wallMat.opacity = 0.94;
+    var floorMat = matTex(woodTexture(cfg.floorColor), 0.12, 0.7); floorMat.side = THREE.DoubleSide; floorMat.opacity = 0.92;
     var ceilMat = mat(0x1a1611, 0.08, 0.9); ceilMat.side = THREE.DoubleSide;
     var coveMat = new THREE.MeshBasicMaterial({color:0xC9A876, transparent:true, opacity:0, side:THREE.DoubleSide});
     var winMat = new THREE.MeshBasicMaterial({map:windowTexture(), transparent:true, opacity:0, side:THREE.DoubleSide});
@@ -497,15 +508,17 @@ function initXrayExperience(){
       group.add(c);
     });
 
-    var back = new THREE.Mesh(new THREE.PlaneGeometry(w,h), wallMat);
-    back.position.set(0, cy-h/2, -d/2);
-    group.add(back);
-
-    [-1,1].forEach(function(side){
-      var sw = new THREE.Mesh(new THREE.PlaneGeometry(d,h), wallMat);
-      sw.rotation.y = side>0 ? -Math.PI/2 : Math.PI/2;
-      sw.position.set(side*w/2, cy-h/2, 0);
-      group.add(sw);
+    var wallDefs = [
+      { geo: new THREE.PlaneGeometry(w,h), rotY: 0, pos: [0,0,-d/2] },
+      { geo: new THREE.PlaneGeometry(d,h), rotY: -Math.PI/2, pos: [w/2,0,0] },
+      { geo: new THREE.PlaneGeometry(d,h), rotY: Math.PI/2, pos: [-w/2,0,0] }
+    ];
+    var wallMeshes = wallDefs.map(function(wd){
+      var m = new THREE.Mesh(wd.geo, wallMat);
+      m.rotation.y = wd.rotY;
+      m.position.set(wd.pos[0], cy-h/2, wd.pos[2]);
+      group.add(m);
+      return m;
     });
 
     var winW = d*0.5, winH = h*0.6;
@@ -521,7 +534,33 @@ function initXrayExperience(){
     var daylight = new THREE.DirectionalLight(0xbcd4e8, 0);
     daylight.position.set(w/2-0.6, cy-h*0.2, d*0.1);
 
-    return { mats:[wallMat,floorMat,ceilMat,coveMat,winMat,frameMat], floorY:floorY, daylight:daylight };
+    /* crescimento real: paredes/piso nascem como planta esquemática baixa e
+       neutra (estética BIM) e "sobem"/ganham cor nobre até a altura final —
+       não é um fade entre duas cenas, é a MESMA parede sendo construída. */
+    var minH = h*0.24;
+    var schematicWall = new THREE.Color(0x9a9184);
+    var luxuryWall = new THREE.Color(cfg.wallColor);
+    var schematicFloor = new THREE.Color(0x8f887a);
+    function growWalls(t){
+      var curH = minH + (h-minH)*t;
+      wallMeshes.forEach(function(m){
+        m.scale.y = curH/h;
+        m.position.y = floorY + curH/2;
+      });
+      wallMat.color.copy(schematicWall).lerp(luxuryWall, t);
+      floorMat.color.copy(schematicFloor).lerp(new THREE.Color(0xffffff), t);
+    }
+    growWalls(0);
+
+    var diag = Math.max(w,d);
+    var planPos = new THREE.Vector3(w*0.3, cy + diag*0.58, d*0.95);
+    var planLook = new THREE.Vector3(0, cy - h*0.3, 0);
+
+    return {
+      mats:[ceilMat,coveMat,winMat,frameMat],
+      floorY:floorY, daylight:daylight, growWalls:growWalls,
+      planPos:planPos, planLook:planLook
+    };
   }
 
   function furnishLiving(THREE, group, floorY){
@@ -620,10 +659,10 @@ function initXrayExperience(){
 
   /* ---------- EXPERIÊNCIA 01 — residencial: duto circular + sala de estar ---------- */
   function buildResidential(THREE, group, isMobile){
-    var ductMat = mat(0xC7C2B6, 0.65, 0.38);
-    var plenumMat = mat(0x3a352c, 0.5, 0.5);
-    var hangerMat = mat(0x211d17, 0.7, 0.4);
-    var diffuserMat = matTex(slotTexture(), 0.25, 0.6);
+    var ductMat = matV(0xC7C2B6, 0.65, 0.38);
+    var plenumMat = matV(0x3a352c, 0.5, 0.5);
+    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
+    var diffuserMat = matTexV(slotTexture(), 0.25, 0.6);
 
     var trunkPts = [[-3.2,0.35,-0.3],[-1.5,0.42,0.25],[0,0.3,-0.15],[1.6,0.4,0.3],[3.2,0.32,-0.2]].map(v3);
     var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
@@ -668,26 +707,27 @@ function initXrayExperience(){
     });
 
     return {
-      structureMats: [ductMat, plenumMat, hangerMat],
-      diffuserMats: [diffuserMat],
       roomMats: room.mats.concat(furn),
       daylight: room.daylight,
+      growWalls: room.growWalls,
+      planPos: room.planPos,
+      planLook: room.planLook,
       closePos: new THREE.Vector3(0.2, 0.5, 1.6),
       closeLook: trunkCurve.getPointAt(0.5),
-      establishPos: new THREE.Vector3(0.3, room.floorY+1.55, 2.6),
-      establishLook: new THREE.Vector3(0, ceilingY-0.9, -1.0),
+      establishPos: new THREE.Vector3(0.3, room.floorY+1.75, 4.6),
+      establishLook: new THREE.Vector3(0, room.floorY+0.85, 1.4),
       tourPts: tourPts
     };
   }
 
   /* ---------- EXPERIÊNCIA 02 — apartamento: caixa de distribuição + VRF + jantar ---------- */
   function buildApartment(THREE, group, isMobile){
-    var boxMat = mat(0x3a352c, 0.55, 0.45);
-    var ductMat = mat(0xC7C2B6, 0.65, 0.38);
-    var copperMat = mat(0xB08A5C, 0.8, 0.25);
-    var sqDiffMat = matTex(gridTexture(), 0.25, 0.6);
-    var cassetteMat = mat(0xEDE6D8, 0.15, 0.55);
-    var hangerMat = mat(0x211d17, 0.7, 0.4);
+    var boxMat = matV(0x3a352c, 0.55, 0.45);
+    var ductMat = matV(0xC7C2B6, 0.65, 0.38);
+    var copperMat = matV(0xB08A5C, 0.8, 0.25);
+    var sqDiffMat = matTexV(gridTexture(), 0.25, 0.6);
+    var cassetteMat = matV(0xEDE6D8, 0.15, 0.55);
+    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
 
     var boxCenter = new THREE.Vector3(0, 0.4, 0);
     var box = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.34,0.6), boxMat);
@@ -730,25 +770,26 @@ function initXrayExperience(){
     tourPts.push({ pos: cassette.position.clone().add(new THREE.Vector3(0.5,0.4,0.7)), look: cassette.position.clone() });
 
     return {
-      structureMats: [boxMat, ductMat, copperMat, hangerMat],
-      diffuserMats: [sqDiffMat, cassetteMat],
       roomMats: room.mats.concat(furn),
       daylight: room.daylight,
+      growWalls: room.growWalls,
+      planPos: room.planPos,
+      planLook: room.planLook,
       closePos: new THREE.Vector3(0.15, 0.5, 1.5),
       closeLook: boxCenter,
-      establishPos: new THREE.Vector3(0.2, room.floorY+1.5, 2.4),
-      establishLook: new THREE.Vector3(0, ceilingY-0.8, -0.6),
+      establishPos: new THREE.Vector3(0.2, room.floorY+1.5, 3.3),
+      establishLook: new THREE.Vector3(0, room.floorY+0.8, 1.5),
       tourPts: tourPts
     };
   }
 
   /* ---------- EXPERIÊNCIA 03 — corporativo: duto retangular + grelha + escritório ---------- */
   function buildCorporate(THREE, group, isMobile){
-    var ductMat = mat(0xB4AEA0, 0.55, 0.42);
-    var plenumMat = mat(0x2c2820, 0.5, 0.5);
-    var hangerMat = mat(0x211d17, 0.7, 0.4);
-    var grilleMat = matTex(hatchTexture(), 0.2, 0.6);
-    var diffMat = matTex(slotTexture(), 0.25, 0.6);
+    var ductMat = matV(0xB4AEA0, 0.55, 0.42);
+    var plenumMat = matV(0x2c2820, 0.5, 0.5);
+    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
+    var grilleMat = matTexV(hatchTexture(), 0.2, 0.6);
+    var diffMat = matTexV(slotTexture(), 0.25, 0.6);
 
     var trunkPts = [[-2.8,0.4,-0.2],[-0.9,0.42,0.15],[0.9,0.38,-0.15],[2.8,0.4,0.1]].map(v3);
     var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
@@ -793,14 +834,15 @@ function initXrayExperience(){
     });
 
     return {
-      structureMats: [ductMat, plenumMat, hangerMat],
-      diffuserMats: [grilleMat, diffMat],
       roomMats: room.mats.concat(furn),
       daylight: room.daylight,
+      growWalls: room.growWalls,
+      planPos: room.planPos,
+      planLook: room.planLook,
       closePos: new THREE.Vector3(0.2, 0.6, 1.7),
       closeLook: trunkCurve.getPointAt(0.5),
-      establishPos: new THREE.Vector3(0.3, room.floorY+1.6, 2.7),
-      establishLook: new THREE.Vector3(0, ceilingY-0.9, -1.0),
+      establishPos: new THREE.Vector3(0.3, room.floorY+1.6, 3.6),
+      establishLook: new THREE.Vector3(0, room.floorY+0.85, 1.5),
       tourPts: tourPts
     };
   }
@@ -836,18 +878,21 @@ function initXrayExperience(){
         scene.add(new THREE.HemisphereLight(0xfff2df, 0x14100a, 0.85));
         var key = new THREE.DirectionalLight(0xffe8c9, 0.9); key.position.set(3,4,3); scene.add(key);
         var rim = new THREE.DirectionalLight(0xC9A876, 0.55); rim.position.set(-3,1,-3); scene.add(rim);
-        scene.fog = new THREE.Fog(0x0B0A08, 3.2, 10);
+        scene.fog = new THREE.Fog(0x0B0A08, 4, 22);
 
         var group = new THREE.Group();
         scene.add(group);
         var built = cfg.build(THREE, group, isMobile);
         scene.add(built.daylight);
 
-        camera.position.copy(built.closePos);
-        camera.lookAt(built.closeLook);
+        camera.position.copy(built.planPos);
+        camera.lookAt(built.planLook);
 
-        var posPts = [built.closePos.clone()];
-        var lookPts = [built.closeLook.clone()];
+        /* trajeto único: visão ampla do projeto (planta) → percurso junto aos
+           dutos/conexões/difusores → interior final — a MESMA cena do início
+           ao fim, nunca um corte entre cenas diferentes. */
+        var posPts = [built.planPos.clone(), built.closePos.clone()];
+        var lookPts = [built.planLook.clone(), built.closeLook.clone()];
         (built.tourPts||[]).forEach(function(tp){ posPts.push(tp.pos); lookPts.push(tp.look); });
         posPts.push(built.establishPos.clone());
         lookPts.push(built.establishLook.clone());
@@ -879,16 +924,20 @@ function initXrayExperience(){
         setPhase(0);
 
         function updateProgress(p){
-          var structureVis = 1 - smooth(p, 0.26, 0.62);
-          var diffuserVis = 0.18 + structureVis*0.80;
-          var roomVis = smooth(p, 0.32, 0.74);
+          /* rede HVAC e envelope (parede/piso) ficam sempre visíveis — o que
+             muda é a arquitetura em volta: paredes crescem da planta técnica
+             até a altura final, e o teto (forro) vai ficando opaco e passa a
+             ocluir de verdade os dutos que ficam acima dele (profundidade 3D
+             real, não opacidade do duto). Difusor/grelha seguem sempre à
+             vista porque estão ao nível do forro, não acima dele. */
+          var wallT = smooth(p, 0.08, 0.52);
+          var roomVis = smooth(p, 0.42, 0.82);
 
-          built.structureMats.forEach(function(m){ m.opacity = structureVis*0.98; });
-          built.diffuserMats.forEach(function(m){ m.opacity = diffuserVis*0.95; });
+          built.growWalls(wallT);
           built.roomMats.forEach(function(m){ m.opacity = roomVis*0.96; });
           built.daylight.intensity = roomVis*0.7;
 
-          var ct = smooth(p, 0, 0.88);
+          var ct = smooth(p, 0, 0.92);
           camera.position.copy(posCurve.getPointAt(Math.min(0.999, ct)));
           camera.lookAt(lookCurve.getPointAt(Math.min(0.999, ct)));
 
