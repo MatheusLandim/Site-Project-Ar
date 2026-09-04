@@ -57,6 +57,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* ===== experiência 3D "do projeto à realização" ===== */
 .experience{position:relative;height:240vh;background:var(--bg)}
+.experience.auto{height:100svh}
 .xr-pin{position:relative;height:100svh;overflow:hidden;background:var(--bg)}
 .duct-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block;will-change:opacity,filter}
 .xr-photo{position:absolute;inset:0;z-index:2;overflow:hidden;opacity:0;pointer-events:none;will-change:opacity}
@@ -160,20 +161,20 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 <div class="home">
 
-  <section class="experience" id="experience01">
+  <section class="experience auto" id="experience01">
     <div class="xr-pin" id="xrPin01">
       <div class="xr-photo" id="xrPhoto01" aria-hidden="true">
         <div class="xr-photo-layer" data-stage="1">
-          <video muted loop playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
+          <video muted loop autoplay playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="2">
-          <video muted loop playsinline preload="auto" poster="img/hvac02-1400.webp"><source src="video/hvac02.mp4" type="video/mp4"></video>
+          <video muted loop autoplay playsinline preload="auto" poster="img/hvac02-1400.webp"><source src="video/hvac02.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="3">
-          <video muted loop playsinline preload="auto" poster="img/hvac03-1400.webp"><source src="video/hvac03.mp4" type="video/mp4"></video>
+          <video muted loop autoplay playsinline preload="auto" poster="img/hvac03-1400.webp"><source src="video/hvac03.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="4">
-          <video muted loop playsinline preload="auto" poster="img/hvac04-1400.webp"><source src="video/hvac04.mp4" type="video/mp4"></video>
+          <video muted loop autoplay playsinline preload="auto" poster="img/hvac04-1400.webp"><source src="video/hvac04.mp4" type="video/mp4"></video>
         </div>
       </div>
       <div class="xr-text">
@@ -182,7 +183,6 @@ img{display:block;width:100%;height:100%;object-fit:cover}
           <p class="xr-line" id="xrLine01">Engenharia que começa <em>antes</em> da obra.</p>
         </div>
       </div>
-      <span class="scrollcue" id="xrCue01">Role para ver o projeto</span>
     </div>
   </section>
 
@@ -431,21 +431,38 @@ function initXrayExperience(){
 
   function smooth(x,a,b){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
 
-  /* sequência de 4 estágios (foto ou vídeo): cada camada entra com máscara
-     em íris + settle de zoom e some em crossfade conforme a próxima assume,
-     com blur controlado no meio da troca — usado tanto no reveal final da
-     cena com 3D (a partir de cfg.photoStart) quanto na cena 100% em vídeo. */
+  /* sequência circular de N estágios (vídeo ou foto): cada camada entra com
+     máscara em íris + settle de zoom e some em crossfade conforme a próxima
+     assume, com blur controlado no meio da troca. "u" é uma posição 0-1 num
+     ciclo que se repete (carrossel autoplay) — os limites são circulares
+     (o último estágio funde de volta para o primeiro), então funciona tanto
+     para 1 vídeo fixo quanto para vários em loop contínuo. */
   function applyPhotoStages(photoLayers, u){
-    var b1=0.32, b2=0.62, b3=0.85, mw=0.09;
-    var r2 = smooth(u,b1-mw,b1+mw), r3 = smooth(u,b2-mw,b2+mw), r4 = smooth(u,b3-mw,b3+mw);
-    var rises = [1, r2, r3, r4];
-    var ops = [1-r2, r2-r3, r3-r4, r4];
-    for(var li=0; li<photoLayers.length; li++){
+    var n = photoLayers.length;
+    if(n===0) return;
+    if(n===1){
+      var only = photoLayers[0];
+      only.style.opacity = 1;
+      only.style.transform = 'scale(1)';
+      only.style.filter = 'none';
+      only.style.webkitMaskImage = 'none';
+      only.style.maskImage = 'none';
+      return;
+    }
+    var mw = Math.min(0.09, 0.4/n);
+    var rises = [];
+    for(var i=0;i<n;i++){
+      var d = u - i/n;
+      d = d - Math.round(d);
+      rises.push(smooth(d, -mw, mw));
+    }
+    for(var li=0; li<n; li++){
       var layer = photoLayers[li];
-      var op = ops[li], rise = rises[li];
+      var rise = rises[li];
+      var op = rise * (1 - rises[(li+1)%n]);
       layer.style.opacity = op;
       layer.style.transform = 'scale('+(1.07-0.07*rise)+')';
-      var blurAmt = 4*op*(1-op) * (li>=2?11:6);
+      var blurAmt = 4*op*(1-op) * 9;
       layer.style.filter = blurAmt>0.05 ? 'blur('+blurAmt.toFixed(2)+'px)' : 'none';
       var maskR = 18 + rise*70;
       var maskCss = 'radial-gradient(circle at 50% 46%, #000 '+(maskR-25)+'%, transparent '+maskR+'%)';
@@ -1170,75 +1187,93 @@ function initXrayExperience(){
     doMount();
   }
 
-  /* ---------- motor da cena 100% em vídeo (substitui a modelagem 3D dos
-     dutos por 4 clipes gerados via Higgsfield, na mesma linguagem visual
-     de crossfade/máscara/blur já usada no reveal final das outras cenas) ---------- */
-  function mountVideoSequence(cfg){
+  /* ---------- motor da cena 100% em vídeo: hero livre (sem prender o
+     scroll), autoplay em loop — substitui a modelagem 3D dos dutos pelos
+     clipes gerados via Higgsfield. Com 1 vídeo só, fica parado/assentado;
+     com vários, cicla continuamente entre eles em crossfade (máscara em
+     íris + blur controlado), como uma vitrine que gira sozinha. */
+  function mountAutoCarousel(cfg){
     var expEl = document.getElementById('experience'+cfg.id);
-    var pinEl = document.getElementById('xrPin'+cfg.id);
-    var fallbackEl = document.getElementById('fallback'+cfg.id);
     var photoEl = document.getElementById('xrPhoto'+cfg.id);
-    if(!expEl || !pinEl || !photoEl) return;
+    var fallbackEl = document.getElementById('fallback'+cfg.id);
+    if(!expEl || !photoEl) return;
 
     function fallback(){
       expEl.style.display = 'none';
       if(fallbackEl) fallbackEl.hidden = false;
     }
-    if(!libsOK){ fallback(); return; }
 
     var photoLayers = photoEl.querySelectorAll('.xr-photo-layer');
     if(!photoLayers.length){ fallback(); return; }
 
     var tagEl = document.getElementById('xrTag'+cfg.id);
     var lineEl = document.getElementById('xrLine'+cfg.id);
-    var cueEl = document.getElementById('xrCue'+cfg.id);
+    var n = photoLayers.length;
+    var videos = [];
+    photoLayers.forEach(function(layer){
+      var v = layer.querySelector('video');
+      if(v) videos.push(v);
+    });
 
     photoEl.style.opacity = 1;
 
-    if(!reduceMotion){
-      photoLayers.forEach(function(layer){
-        var v = layer.querySelector('video');
-        if(v) v.play().catch(function(){});
-      });
+    function setPhaseText(i){
+      if(!tagEl || !cfg.tags) return;
+      tagEl.textContent = cfg.tags[i];
+      lineEl.innerHTML = cfg.lines[i];
+      tagEl.style.opacity = 1;
+      lineEl.style.opacity = 1;
     }
 
+    if(reduceMotion || n<=1){
+      applyPhotoStages(photoLayers, 0);
+      if(!reduceMotion){ videos.forEach(function(v){ v.play().catch(function(){}); }); }
+      setPhaseText(0);
+      return;
+    }
+
+    videos.forEach(function(v){ v.play().catch(function(){}); });
+
+    var stageDur = cfg.stageDuration || 5;
+    var cycle = stageDur * n;
+    var start = performance.now();
     var curPhase = -1;
     function setPhase(i){
-      if(i===curPhase) return;
+      if(i===curPhase || !tagEl) return;
       curPhase = i;
       tagEl.style.opacity = 0;
       lineEl.style.opacity = 0;
-      setTimeout(function(){
-        tagEl.textContent = cfg.tags[i];
-        lineEl.innerHTML = cfg.lines[i];
-        tagEl.style.opacity = 1;
-        lineEl.style.opacity = 1;
-      }, 200);
+      setTimeout(function(){ setPhaseText(i); }, 200);
     }
     setPhase(0);
 
-    function updateProgress(p){
-      applyPhotoStages(photoLayers, p);
-      setPhase(p < 0.5 ? 0 : 1);
-      cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
+    var active = false;
+    function tick(){
+      if(!active) return;
+      var u = ((performance.now()-start)/1000 % cycle) / cycle;
+      applyPhotoStages(photoLayers, u);
+      var stageIdx = Math.floor(u*n) % n;
+      setPhase(stageIdx < Math.ceil(n/2) ? 0 : 1);
+      requestAnimationFrame(tick);
     }
 
-    var st = ScrollTrigger.create({
-      trigger: expEl,
-      start: 'top top',
-      end: 'bottom bottom',
-      pin: pinEl,
-      scrub: 0.6,
-      onUpdate: function(self){ updateProgress(self.progress); }
-    });
-    updateProgress(st.progress || 0);
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        var was = active;
+        active = entries[0].isIntersecting;
+        if(active && !was) tick();
+      }, {threshold:0.1}).observe(expEl);
+    } else {
+      active = true;
+      tick();
+    }
   }
 
   if(libsOK){
     gsap.registerPlugin(ScrollTrigger);
   }
 
-  mountVideoSequence({
+  mountAutoCarousel({
     id: '01',
     tags: ['Projeto · Residência', 'Resultado · Residência'],
     lines: [
