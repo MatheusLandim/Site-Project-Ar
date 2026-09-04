@@ -714,7 +714,7 @@ function initXrayExperience(){
       planLook: room.planLook,
       closePos: new THREE.Vector3(0.2, 0.5, 1.6),
       closeLook: trunkCurve.getPointAt(0.5),
-      establishPos: new THREE.Vector3(0.3, room.floorY+1.75, 4.6),
+      establishPos: new THREE.Vector3(0.3, room.floorY+1.9, 6.0),
       establishLook: new THREE.Vector3(0, room.floorY+0.85, 1.4),
       tourPts: tourPts
     };
@@ -859,7 +859,11 @@ function initXrayExperience(){
       if(fallbackEl) fallbackEl.hidden = false;
     }
 
-    if(reduceMotion || !webglOK || !libsOK){ fallback(); return; }
+    /* "prefers-reduced-motion" não derruba a experiência inteira: a câmera é
+       controlada pelo scroll do próprio visitante (não é autoplay), o que é
+       aceitável mesmo com essa preferência ativa. Só desligamos a pequena
+       oscilação ambiente (idle) mais abaixo. Sem WebGL/libs não tem 3D possível. */
+    if(!webglOK || !libsOK){ fallback(); return; }
 
     function doMount(){
       try{
@@ -899,11 +903,20 @@ function initXrayExperience(){
         var posCurve = new THREE.CatmullRomCurve3(posPts);
         var lookCurve = new THREE.CatmullRomCurve3(lookPts);
 
+        /* mantém o campo de visão HORIZONTAL ~constante (não o vertical) —
+           numa tela estreita/retrato, um FOV vertical fixo enquadra só um
+           trecho do duto; ramais e piso saem de quadro. Recalcular o FOV
+           vertical a partir da proporção mantém a mesma largura de cena
+           visível em qualquer aspecto (com um teto para não distorcer). */
+        var targetHalfHFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(21))*1.6);
         function fitCanvas(){
           var w = pinEl.clientWidth, h = pinEl.clientHeight;
           if(!w || !h) return;
           renderer.setSize(w, h, false);
-          camera.aspect = w/h;
+          var aspect = w/h;
+          camera.aspect = aspect;
+          var vFovRad = 2*Math.atan(Math.tan(targetHalfHFov)/aspect);
+          camera.fov = THREE.MathUtils.radToDeg(Math.min(vFovRad, THREE.MathUtils.degToRad(72)));
           camera.updateProjectionMatrix();
         }
         fitCanvas();
@@ -959,19 +972,21 @@ function initXrayExperience(){
 
         addEventListener('resize', function(){ fitCanvas(); });
 
-        var active = false, clock = new THREE.Clock(), raf = null;
-        function tick(){
-          if(!active) return;
-          var t = clock.getElapsedTime();
-          group.rotation.y = Math.sin(t*0.1)*0.008;
-          renderer.render(scene, camera);
-          raf = requestAnimationFrame(tick);
-        }
-        if('IntersectionObserver' in window){
-          new IntersectionObserver(function(entries){
-            active = entries[0].isIntersecting;
-            if(active && !raf) tick();
-          }, {threshold:0.05}).observe(expEl);
+        if(!reduceMotion){
+          var active = false, clock = new THREE.Clock(), raf = null;
+          function tick(){
+            if(!active) return;
+            var t = clock.getElapsedTime();
+            group.rotation.y = Math.sin(t*0.1)*0.008;
+            renderer.render(scene, camera);
+            raf = requestAnimationFrame(tick);
+          }
+          if('IntersectionObserver' in window){
+            new IntersectionObserver(function(entries){
+              active = entries[0].isIntersecting;
+              if(active && !raf) tick();
+            }, {threshold:0.05}).observe(expEl);
+          }
         }
       }catch(err){
         console.error('Experiência 3D ('+cfg.id+') indisponível, usando modo estático:', err);
@@ -985,7 +1000,7 @@ function initXrayExperience(){
     doMount();
   }
 
-  if(!(reduceMotion || !webglOK || !libsOK)){
+  if(webglOK && libsOK){
     gsap.registerPlugin(ScrollTrigger);
   }
 
