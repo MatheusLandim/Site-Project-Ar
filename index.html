@@ -466,8 +466,145 @@ function initXrayExperience(){
     return texCache.hatch;
   }
 
-  /* segmentos de caixa orientados ao longo de uma curva — duto retangular */
-  function buildRectDuctPath(THREE, group, curve, segs, w, h, material){
+  /* ================= BIBLIOTECA MODULAR HVAC =================
+     Peças reutilizadas pelas 3 cenas para montar uma REDE (tronco → redução
+     → ramal → plenum → difusor), com colares/flanges marcando as emendas
+     reais entre trechos de chapa metálica — nunca um sólido único genérico. */
+
+  /* caixa afunilada com faces retas (não suavizadas) — redução dimensional */
+  function taperedBoxGeometry(w1,h1,w2,h2,len){
+    var hw1=w1/2, hh1=h1/2, hw2=w2/2, hh2=h2/2, hl=len/2;
+    var c = [
+      [-hw1,-hh1,-hl],[hw1,-hh1,-hl],[hw1,hh1,-hl],[-hw1,hh1,-hl],
+      [-hw2,-hh2, hl],[hw2,-hh2, hl],[hw2,hh2, hl],[-hw2,hh2, hl]
+    ];
+    var faces = [[0,1,2,3],[5,4,7,6],[0,4,5,1],[1,5,6,2],[2,6,7,3],[3,7,4,0]];
+    var v = [], idx = [];
+    faces.forEach(function(f, fi){
+      var base = fi*4;
+      f.forEach(function(ci){ v.push(c[ci][0], c[ci][1], c[ci][2]); });
+      idx.push(base,base+1,base+2, base,base+2,base+3);
+    });
+    var g = new THREE.BufferGeometry();
+    g.setIndex(idx);
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(v),3));
+    g.computeVertexNormals();
+    return g;
+  }
+  function orientAlongY(obj, dir){
+    obj.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
+  }
+  /* colar/flange fino na junção entre trechos — a "costura" que faz o olho
+     entender que é chapa metálica fabricada e montada em obra */
+  function flangeRect(group, point, dir, w, h, mat){
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w+0.03, h+0.03, 0.022), mat);
+    m.position.copy(point);
+    m.lookAt(point.clone().add(dir));
+    group.add(m);
+    return m;
+  }
+  function flangeRound(group, point, dir, r, mat){
+    var m = new THREE.Mesh(new THREE.TorusGeometry(r+0.012, 0.014, 6, 16), mat);
+    m.position.copy(point);
+    m.lookAt(point.clone().add(dir));
+    group.add(m);
+    return m;
+  }
+  /* redução retangular com colar em cada ponta */
+  function reducerRect(group, a, b, w1, h1, w2, h2, mat, flangeMat){
+    var dir = b.clone().sub(a), len = dir.length();
+    if(len < 0.001) return;
+    var rmat = mat.clone(); rmat.side = THREE.DoubleSide;
+    var m = new THREE.Mesh(taperedBoxGeometry(w1,h1,w2,h2,len*1.02), rmat);
+    m.position.copy(a).lerp(b, 0.5);
+    m.lookAt(b);
+    group.add(m);
+    if(flangeMat){ flangeRect(group, a, dir, w1, h1, flangeMat); flangeRect(group, b, dir, w2, h2, flangeMat); }
+    return m;
+  }
+  /* redução circular (cone truncado) com colar em cada ponta */
+  function reducerRound(group, a, b, r1, r2, mat, flangeMat){
+    var dir = b.clone().sub(a), len = dir.length();
+    if(len < 0.001) return;
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(r2, r1, len*1.02, 14, 1, true), mat);
+    m.position.copy(a).lerp(b, 0.5);
+    orientAlongY(m, dir);
+    group.add(m);
+    if(flangeMat){ flangeRound(group, a, dir, r1, flangeMat); flangeRound(group, b, dir, r2, flangeMat); }
+    return m;
+  }
+  /* difusor linear moderno: moldura + aletas defletoras anguladas — nunca uma placa lisa */
+  function linearDiffuser(group, center, w, d, frameMat, slatMat, nSlats){
+    nSlats = nSlats || 5;
+    var ft = 0.018, fh = 0.016;
+    [-1,1].forEach(function(s){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(ft, fh, d), frameMat);
+      m.position.set(center.x+s*(w-ft)/2, center.y, center.z);
+      group.add(m);
+    });
+    [-1,1].forEach(function(s){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, fh, ft), frameMat);
+      m.position.set(center.x, center.y, center.z+s*(d-ft)/2);
+      group.add(m);
+    });
+    for(var i=0;i<nSlats;i++){
+      var t = (i+0.5)/nSlats - 0.5;
+      var slat = new THREE.Mesh(new THREE.BoxGeometry(w-ft*2.2, 0.01, Math.max(0.012, d*0.7/nSlats)), slatMat);
+      slat.position.set(center.x, center.y-0.006, center.z + t*(d-ft*2));
+      slat.rotation.x = 0.45;
+      group.add(slat);
+    }
+    var back = new THREE.Mesh(new THREE.PlaneGeometry(w-ft*2, d-ft*2), slatMat);
+    back.rotation.x = -Math.PI/2;
+    back.position.set(center.x, center.y-0.022, center.z);
+    group.add(back);
+  }
+  /* difusor/grelha quadrada: moldura + núcleo texturizado */
+  function squareDiffuser(group, center, size, frameMat, coreMat){
+    var ft = 0.018, fh = 0.016;
+    [[-1,0,ft,size],[1,0,ft,size],[0,-1,size,ft],[0,1,size,ft]].forEach(function(f){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(f[2], fh, f[3]), frameMat);
+      m.position.set(center.x+f[0]*(size-ft)/2, center.y, center.z+f[1]*(size-ft)/2);
+      group.add(m);
+    });
+    var core = new THREE.Mesh(new THREE.PlaneGeometry(size-ft*2, size-ft*2), coreMat);
+    core.rotation.x = -Math.PI/2;
+    core.position.set(center.x, center.y-0.014, center.z);
+    group.add(core);
+  }
+  /* suporte/tirante: vergalhão + braçadeira — não um cilindro solto */
+  function hangerBracket(group, hp, mat){
+    var rod = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.5,6), mat);
+    rod.position.set(hp.x, hp.y+0.28, hp.z);
+    group.add(rod);
+    var clamp = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.016,0.055), mat);
+    clamp.position.set(hp.x, hp.y+0.015, hp.z);
+    group.add(clamp);
+    return rod;
+  }
+  /* linha frigorígena isolada — numa instalação real o que se vê é o
+     isolamento térmico, não o cobre nu */
+  function refrigerantLine(group, curve, segs, r, insulMat){
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, segs, r, 8, false), insulMat));
+  }
+  /* unidade evaporadora VRF (cassete de teto): corpo + grelha + LED de status */
+  function vrfCassette(group, center, bodyMat, gridMat, ledMat){
+    var body = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.09,0.44), bodyMat);
+    body.position.copy(center);
+    group.add(body);
+    var grille = new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.34), gridMat);
+    grille.rotation.x = -Math.PI/2;
+    grille.position.set(center.x, center.y-0.046, center.z);
+    group.add(grille);
+    var led = new THREE.Mesh(new THREE.SphereGeometry(0.007,8,6), ledMat);
+    led.position.set(center.x+0.27, center.y-0.04, center.z-0.17);
+    group.add(led);
+  }
+
+  /* segmentos de caixa orientados ao longo de uma curva — duto retangular,
+     com colares periódicos opcionais marcando as emendas entre trechos */
+  function buildRectDuctPath(THREE, group, curve, segs, w, h, material, opts){
+    opts = opts || {};
     var pts = [];
     for(var i=0;i<=segs;i++){ pts.push(curve.getPointAt(i/segs)); }
     for(i=0;i<segs;i++){
@@ -479,6 +616,13 @@ function initXrayExperience(){
       box.position.copy(mid);
       box.lookAt(b);
       group.add(box);
+      if(opts.flangeMat && opts.flangeEvery && i>0 && (i%opts.flangeEvery===0)){
+        flangeRect(group, a, b.clone().sub(a), w, h, opts.flangeMat);
+      }
+    }
+    if(opts.flangeMat && opts.flangeEvery){
+      flangeRect(group, pts[0], pts[1].clone().sub(pts[0]), w, h, opts.flangeMat);
+      flangeRect(group, pts[segs], pts[segs].clone().sub(pts[segs-1]), w, h, opts.flangeMat);
     }
   }
 
@@ -688,20 +832,24 @@ function initXrayExperience(){
 
   /* ---------- EXPERIÊNCIA 01 — residencial: duto circular + sala de estar ---------- */
   function buildResidential(THREE, group, isMobile){
-    var ductMat = matV(0xC7C2B6, 0.65, 0.38);
-    var plenumMat = matV(0x3a352c, 0.5, 0.5);
-    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
-    var diffuserMat = matTexV(slotTexture(), 0.25, 0.6);
+    var ductMat = matV(0xC7C2B6, 0.74, 0.3);
+    var flangeMat = matV(0x1c1813, 0.6, 0.42);
+    var plenumMat = matV(0x3a352c, 0.55, 0.45);
+    var hangerMat = matV(0x211d17, 0.7, 0.4, 0.85);
+    var frameMat = matV(0xC9C2B0, 0.78, 0.26);
+    var slatMat = matTexV(slotTexture(), 0.28, 0.58);
 
     var trunkPts = [[-3.2,0.35,-0.3],[-1.5,0.42,0.25],[0,0.3,-0.15],[1.6,0.4,0.3],[3.2,0.32,-0.2]].map(v3);
     var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
     group.add(new THREE.Mesh(new THREE.TubeGeometry(trunkCurve, isMobile?40:72, 0.17, 12, false), ductMat));
 
+    var flangeSteps = isMobile ? [0.22,0.5,0.78] : [0.1,0.3,0.5,0.7,0.9];
+    flangeSteps.forEach(function(t){
+      flangeRound(group, trunkCurve.getPointAt(t), trunkCurve.getTangentAt(t), 0.17, flangeMat);
+    });
+
     for(var s=0.1; s<1; s+=0.22){
-      var hp = trunkCurve.getPointAt(s);
-      var hg = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.5,6), hangerMat);
-      hg.position.set(hp.x, hp.y+0.28, hp.z);
-      group.add(hg);
+      hangerBracket(group, trunkCurve.getPointAt(s), hangerMat);
     }
 
     var branchData = [];
@@ -712,19 +860,18 @@ function initXrayExperience(){
       var bc = new THREE.CatmullRomCurve3([basePt.clone(), basePt.clone().lerp(dropPt,0.45).add(new THREE.Vector3(0,-0.05,0)), dropPt.clone()]);
       group.add(new THREE.Mesh(new THREE.TubeGeometry(bc, isMobile?14:24, 0.08, 8, false), ductMat));
 
-      var reducer = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.16,0.14,12), plenumMat);
-      reducer.position.copy(basePt); reducer.lookAt(dropPt); reducer.rotateX(Math.PI/2);
-      group.add(reducer);
+      var takeoffDir = dropPt.clone().sub(basePt).normalize();
+      var redEnd = basePt.clone().add(takeoffDir.multiplyScalar(0.16));
+      reducerRound(group, basePt, redEnd, 0.09, 0.16, plenumMat, flangeMat);
 
-      var plenum = new THREE.Mesh(new THREE.BoxGeometry(0.32,0.16,0.24), plenumMat);
+      var plenum = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.16,0.26), plenumMat);
       plenum.position.copy(dropPt).add(new THREE.Vector3(0,-0.1,0.15));
       group.add(plenum);
 
-      var diff = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.03,0.14), diffuserMat);
-      diff.position.copy(plenum.position).add(new THREE.Vector3(0,-0.11,0.16));
-      group.add(diff);
+      var diffCenter = plenum.position.clone().add(new THREE.Vector3(0,-0.11,0.16));
+      linearDiffuser(group, diffCenter, 0.62, 0.15, frameMat, slatMat, isMobile?4:6);
 
-      branchData.push({side:side, plenum:plenum.position.clone(), diffuser:diff.position.clone()});
+      branchData.push({side:side, plenum:plenum.position.clone(), diffuser:diffCenter});
     });
 
     var ceilingY = branchData[1].diffuser.y;
@@ -751,17 +898,23 @@ function initXrayExperience(){
 
   /* ---------- EXPERIÊNCIA 02 — apartamento: caixa de distribuição + VRF + jantar ---------- */
   function buildApartment(THREE, group, isMobile){
-    var boxMat = matV(0x3a352c, 0.55, 0.45);
-    var ductMat = matV(0xC7C2B6, 0.65, 0.38);
-    var copperMat = matV(0xB08A5C, 0.8, 0.25);
+    var boxMat = matV(0x3a352c, 0.6, 0.4);
+    var ductMat = matV(0xC7C2B6, 0.74, 0.3);
+    var flangeMat = matV(0x1c1813, 0.6, 0.42);
+    var insulMat = matV(0x2b2b28, 0.05, 0.88);
     var sqDiffMat = matTexV(gridTexture(), 0.25, 0.6);
-    var cassetteMat = matV(0xEDE6D8, 0.15, 0.55);
+    var frameMat = matV(0xC9C2B0, 0.78, 0.26);
+    var cassetteMat = matV(0xEDE6D8, 0.18, 0.5);
+    var ledMat = matV(0x8fd3a0, 0.2, 0.5, 0.92);
     var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
 
     var boxCenter = new THREE.Vector3(0, 0.4, 0);
     var box = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.34,0.6), boxMat);
     box.position.copy(boxCenter);
     group.add(box);
+    [-1,1].forEach(function(side){
+      flangeRect(group, boxCenter.clone().add(new THREE.Vector3(side*0.44,0,0)), new THREE.Vector3(side,0,0), 0.34, 0.6, flangeMat);
+    });
 
     var branchData = [];
     [-1,1].forEach(function(side){
@@ -769,24 +922,21 @@ function initXrayExperience(){
       var dropPt = basePt.clone().add(new THREE.Vector3(side*1.3,-0.5,0.8));
       var bc = new THREE.CatmullRomCurve3([basePt, basePt.clone().lerp(dropPt,0.5).add(new THREE.Vector3(0,-0.05,0)), dropPt]);
       group.add(new THREE.Mesh(new THREE.TubeGeometry(bc, isMobile?14:22, 0.09, 8, false), ductMat));
-      var diff = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.03,0.34), sqDiffMat);
-      diff.position.copy(dropPt).add(new THREE.Vector3(0,-0.12,0.14));
-      group.add(diff);
-      branchData.push({side:side, diffuser:diff.position.clone()});
+      flangeRound(group, basePt, new THREE.Vector3(side,0,0), 0.09, flangeMat);
+      var diffCenter = dropPt.clone().add(new THREE.Vector3(0,-0.12,0.14));
+      squareDiffuser(group, diffCenter, 0.34, frameMat, sqDiffMat);
+      branchData.push({side:side, diffuser:diffCenter});
     });
 
     var baseC = boxCenter.clone().add(new THREE.Vector3(0,0,0.3));
     var dropC = baseC.clone().add(new THREE.Vector3(-0.3,-0.6,1.4));
     var cc = new THREE.CatmullRomCurve3([baseC, baseC.clone().lerp(dropC,0.5).add(new THREE.Vector3(0,-0.05,0)), dropC]);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(cc, isMobile?12:20, 0.045, 8, false), copperMat));
-    var cassette = new THREE.Mesh(new THREE.BoxGeometry(0.55,0.07,0.4), cassetteMat);
-    cassette.position.copy(dropC).add(new THREE.Vector3(0,-0.1,0.18));
-    group.add(cassette);
+    refrigerantLine(group, cc, isMobile?12:20, 0.05, insulMat);
+    var cassetteCenter = dropC.clone().add(new THREE.Vector3(0,-0.1,0.18));
+    vrfCassette(group, cassetteCenter, cassetteMat, sqDiffMat, ledMat);
 
     [[-0.3,0],[0.3,0]].forEach(function(o){
-      var hg = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.45,6), hangerMat);
-      hg.position.set(boxCenter.x+o[0], boxCenter.y+0.25, boxCenter.z+o[1]);
-      group.add(hg);
+      hangerBracket(group, new THREE.Vector3(boxCenter.x+o[0], boxCenter.y+0.25, boxCenter.z+o[1]), hangerMat);
     });
 
     var ceilingY = branchData[0].diffuser.y;
@@ -796,7 +946,7 @@ function initXrayExperience(){
     var tourPts = branchData.map(function(b){
       return { pos: b.diffuser.clone().add(new THREE.Vector3(b.side*0.3,0.45,0.75)), look: b.diffuser.clone() };
     });
-    tourPts.push({ pos: cassette.position.clone().add(new THREE.Vector3(0.5,0.4,0.7)), look: cassette.position.clone() });
+    tourPts.push({ pos: cassetteCenter.clone().add(new THREE.Vector3(0.5,0.4,0.7)), look: cassetteCenter.clone() });
 
     return {
       roomMats: room.mats.concat(furn),
@@ -814,21 +964,20 @@ function initXrayExperience(){
 
   /* ---------- EXPERIÊNCIA 03 — corporativo: duto retangular + grelha + escritório ---------- */
   function buildCorporate(THREE, group, isMobile){
-    var ductMat = matV(0xB4AEA0, 0.55, 0.42);
-    var plenumMat = matV(0x2c2820, 0.5, 0.5);
+    var ductMat = matV(0xB4AEA0, 0.68, 0.32);
+    var flangeMat = matV(0x1c1813, 0.6, 0.42);
+    var plenumMat = matV(0x2c2820, 0.55, 0.5);
     var hangerMat = matV(0x211d17, 0.7, 0.4, 0.8);
+    var frameMat = matV(0xB8B2A2, 0.7, 0.3);
     var grilleMat = matTexV(hatchTexture(), 0.2, 0.6);
     var diffMat = matTexV(slotTexture(), 0.25, 0.6);
 
     var trunkPts = [[-2.8,0.4,-0.2],[-0.9,0.42,0.15],[0.9,0.38,-0.15],[2.8,0.4,0.1]].map(v3);
     var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
-    buildRectDuctPath(THREE, group, trunkCurve, isMobile?16:28, 0.34, 0.22, ductMat);
+    buildRectDuctPath(THREE, group, trunkCurve, isMobile?16:28, 0.34, 0.22, ductMat, {flangeMat:flangeMat, flangeEvery: isMobile?8:6});
 
     for(var s=0.15; s<1; s+=0.24){
-      var hp = trunkCurve.getPointAt(s);
-      var hg = new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,0.5,6), hangerMat);
-      hg.position.set(hp.x, hp.y+0.3, hp.z);
-      group.add(hg);
+      hangerBracket(group, trunkCurve.getPointAt(s), hangerMat);
     }
 
     var branchData = [];
@@ -838,16 +987,15 @@ function initXrayExperience(){
       var dropPt = basePt.clone().add(new THREE.Vector3(side*0.2,-0.5,0.85));
       var bc = new THREE.CatmullRomCurve3([basePt, basePt.clone().lerp(dropPt,0.5).add(new THREE.Vector3(0,-0.05,0)), dropPt]);
       buildRectDuctPath(THREE, group, bc, isMobile?10:16, 0.2, 0.14, ductMat);
+      flangeRect(group, basePt, dropPt.clone().sub(basePt), 0.2, 0.14, flangeMat);
 
-      var el;
+      var diffCenter = dropPt.clone().add(new THREE.Vector3(0,-0.12,0.16));
       if(i===0){
-        el = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.03,0.32), grilleMat);
+        squareDiffuser(group, diffCenter, 0.4, frameMat, grilleMat);
       } else {
-        el = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.03,0.14), diffMat);
+        linearDiffuser(group, diffCenter, 0.6, 0.14, frameMat, diffMat, isMobile?4:6);
       }
-      el.position.copy(dropPt).add(new THREE.Vector3(0,-0.12,0.16));
-      group.add(el);
-      branchData.push({side:side, diffuser:el.position.clone()});
+      branchData.push({side:side, diffuser:diffCenter});
     });
 
     var eq = new THREE.Mesh(new THREE.BoxGeometry(0.7,0.4,0.5), plenumMat);
