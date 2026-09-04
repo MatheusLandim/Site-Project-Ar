@@ -21,6 +21,7 @@
   --body:#C9C3B8;
   --mute:#8B8478;
   --line:rgba(243,238,230,.14);
+  --mat:#F3EEE6;
   --acc:#C9A876;
   --m:clamp(20px,5vw,72px);
 }
@@ -102,6 +103,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .gap{height:clamp(48px,7vw,96px)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:clamp(28px,4vw,50px);margin-top:clamp(36px,5vw,60px)}
 .wk{text-decoration:none;cursor:pointer}
+.wk .frame{background:var(--mat);padding:10px;box-shadow:0 18px 40px -20px rgba(0,0,0,.6)}
 .wk .im{aspect-ratio:4/3;overflow:hidden;background:var(--surface)}
 .wk .im img{transition:transform 1.6s cubic-bezier(.16,0,.2,1)}
 .wk:hover .im img{transform:scale(1.04)}
@@ -241,13 +243,13 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <div class="pin">
     <div class="col"><span class="u">Portfólio</span><p class="big se" style="margin-top:18px">Projetos entregues em São Paulo e região.</p></div>
     <div class="grid2">
-      <a class="wk"><div class="im"><img src="img/fazenda-boa-vista-800.webp" srcset="img/fazenda-boa-vista-800.webp 800w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista" loading="lazy"></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Lampur Engenharia</div><div class="ds">Residência de altíssimo padrão, 3.000 m². Distribuição por grelhas e difusores lineares integrados à arquitetura.</div></a>
-      <a class="wk"><div class="im"><img src="img/apto-alto-padrao-1400.webp" srcset="img/apto-alto-padrao-800.webp 800w, img/apto-alto-padrao-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo</div><div class="ds">Apartamento de alto padrão, +1.000 m², equipamentos Daikin e difusores integrados ao projeto.</div></a>
-      <a class="wk"><div class="im"><img src="img/difusor-linear-1400.webp" srcset="img/difusor-linear-800.webp 800w, img/difusor-linear-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Vila Madalena" loading="lazy"></div><div class="nm se">Vila Madalena</div><div class="rt">São Paulo · Estúdio Cantú</div><div class="ds">Executivo com entreforro reduzido, compatível com o pé-direito e a marcenaria.</div></a>
-      <a class="wk"><div class="im"><img src="img/beiral-madeira-1400.webp" srcset="img/beiral-madeira-800.webp 800w, img/beiral-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista externa" loading="lazy"></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Triz Engenharia</div><div class="ds">Climatização integrada às áreas sociais, varanda coberta e piscina.</div></a>
-      <a class="wk"><div class="im"><img src="img/pe-direito-1400.webp" srcset="img/pe-direito-800.webp 800w, img/pe-direito-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Brooklin" loading="lazy"></div><div class="nm se">Brooklin</div><div class="rt">São Paulo · Strix Engenharia</div><div class="ds">Corporativo, compatibilização de layout, salas de reunião, forro e elétrica.</div></a>
-      <a class="wk"><div class="im"><img src="img/sala-jantar-1400.webp" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Haras Larissa" loading="lazy"></div><div class="nm se">Haras Larissa</div><div class="rt">Monte Mor · Debora Roig</div><div class="ds">Climatização integrada às áreas sociais e ambientes externos cobertos.</div></a>
-      <a class="wk"><div class="im"><img src="img/suite-1400.webp" srcset="img/suite-800.webp 800w, img/suite-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo · Pace Arquitetura</div><div class="ds">Multipavimento com detalhamento de furos em laje, drenos isolados e pontos de força.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/fazenda-boa-vista-800.webp" srcset="img/fazenda-boa-vista-800.webp 800w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista" loading="lazy"></div></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Lampur Engenharia</div><div class="ds">Residência de altíssimo padrão, 3.000 m². Distribuição por grelhas e difusores lineares integrados à arquitetura.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/apto-alto-padrao-1400.webp" srcset="img/apto-alto-padrao-800.webp 800w, img/apto-alto-padrao-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo</div><div class="ds">Apartamento de alto padrão, +1.000 m², equipamentos Daikin e difusores integrados ao projeto.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/difusor-linear-1400.webp" srcset="img/difusor-linear-800.webp 800w, img/difusor-linear-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Vila Madalena" loading="lazy"></div></div><div class="nm se">Vila Madalena</div><div class="rt">São Paulo · Estúdio Cantú</div><div class="ds">Executivo com entreforro reduzido, compatível com o pé-direito e a marcenaria.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/beiral-madeira-1400.webp" srcset="img/beiral-madeira-800.webp 800w, img/beiral-madeira-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Fazenda Boa Vista externa" loading="lazy"></div></div><div class="nm se">Fazenda Boa Vista</div><div class="rt">Porto Feliz · Triz Engenharia</div><div class="ds">Climatização integrada às áreas sociais, varanda coberta e piscina.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/pe-direito-1400.webp" srcset="img/pe-direito-800.webp 800w, img/pe-direito-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Brooklin" loading="lazy"></div></div><div class="nm se">Brooklin</div><div class="rt">São Paulo · Strix Engenharia</div><div class="ds">Corporativo, compatibilização de layout, salas de reunião, forro e elétrica.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/sala-jantar-1400.webp" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Haras Larissa" loading="lazy"></div></div><div class="nm se">Haras Larissa</div><div class="rt">Monte Mor · Debora Roig</div><div class="ds">Climatização integrada às áreas sociais e ambientes externos cobertos.</div></a>
+      <a class="wk"><div class="frame"><div class="im"><img src="img/suite-1400.webp" srcset="img/suite-800.webp 800w, img/suite-1400.webp 1400w" sizes="(max-width:640px) 90vw, 440px" alt="Jardim Paulista" loading="lazy"></div></div><div class="nm se">Jardim Paulista</div><div class="rt">São Paulo · Pace Arquitetura</div><div class="ds">Multipavimento com detalhamento de furos em laje, drenos isolados e pontos de força.</div></a>
     </div>
     <div class="gap"></div>
     <a class="lk" data-panel="contato">Solicitar proposta</a>
@@ -432,10 +434,11 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     var mesh = new THREE.Mesh(geo, mat);
     group.add(mesh);
 
-    var backMat = new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:.35});
-    var back = new THREE.Mesh(new THREE.PlaneGeometry(w*1.08,h*1.1), backMat);
-    back.position.z = -0.05;
-    group.add(back);
+    // moldura clara (passe-partout) atrás da foto, para separar do fundo escuro
+    var matBoardMat = new THREE.MeshBasicMaterial({color:0xF3EEE6, toneMapped:false});
+    var matBoard = new THREE.Mesh(new THREE.PlaneGeometry(w*1.14,h*1.14), matBoardMat);
+    matBoard.position.z = -0.03;
+    group.add(matBoard);
 
     var p = curve.getPointAt(t);
     var tangent = curve.getTangentAt(t).normalize();
