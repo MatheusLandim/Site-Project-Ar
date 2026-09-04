@@ -32,10 +32,7 @@ body{background:var(--bg);color:var(--body);font-family:'Jost',system-ui,sans-se
 .se{font-family:'Fraunces',Georgia,serif}
 img{display:block;width:100%;height:100%;object-fit:cover}
 
-/* ===== palco 3D ===== */
-#stage{position:fixed;inset:0;z-index:0}
-#stage canvas{display:block;width:100%;height:100%}
-.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center, transparent 42%, #0B0A08 96%)}
+/* ===== textura de fundo ===== */
 .grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
 
 /* loader */
@@ -45,35 +42,46 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .loader .bar i{display:block;height:100%;width:0%;background:var(--acc);transition:width .25s}
 .loader.hide{opacity:0;visibility:hidden}
 
-/* scroller invisível: só dá altura à página para pilotar a câmera */
-.scroller{position:relative;z-index:3}
-.spacer{height:700vh}
-
-/* overlays de texto sincronizados ao scroll */
-.ov{position:fixed;left:0;right:0;top:0;height:100vh;z-index:5;display:flex;align-items:center;pointer-events:none;opacity:0;transition:opacity .5s ease}
-.ov.on{pointer-events:auto}
-.ov .box{padding:0 var(--m);max-width:640px}
-.ov.center{justify-content:center;text-align:center}
-.ov.left .box{margin-right:auto}
-.ov.right .box{margin-left:auto}
 .k{display:block;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--acc);margin-bottom:20px}
-.ov h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,5.4vw,4rem);line-height:1.14;letter-spacing:-.01em;color:var(--text);text-wrap:balance}
-.ov h1 em{font-style:italic;color:var(--acc);font-weight:400}
-.ov p{margin-top:20px;font-size:14.5px;color:var(--body);max-width:42ch;line-height:1.9}
-.ov.center p{margin-left:auto;margin-right:auto}
-.tagpair{margin-top:22px;display:flex;gap:20px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
-.ov.center .tagpair{justify-content:center}
-
-.hint{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:6;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);opacity:.85;transition:opacity .5s}
-.hint.hide{opacity:0}
 
 .btn{display:inline-block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;padding:17px 38px;text-decoration:none;cursor:pointer;border:1px solid transparent}
 .btn-solid{color:var(--bg);background:var(--acc)}
 .btn-ghost{color:var(--text);background:transparent;border-color:var(--line)}
 .cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:32px}
 
-@media(max-width:720px){ .ov .box{max-width:86vw} }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== home narrativa ===== */
+.home{position:relative;z-index:3}
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px var(--m) 60px}
+.hero .box{max-width:720px}
+.hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.1rem,5.6vw,4.2rem);line-height:1.14;letter-spacing:-.01em;color:var(--text);text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--acc);font-weight:400}
+.hero p{margin-top:20px;font-size:14.5px;color:var(--body);max-width:44ch;margin-left:auto;margin-right:auto;line-height:1.9}
+.scrollcue{margin-top:56px;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);opacity:.85}
+
+.story{padding:clamp(60px,10vw,120px) var(--m);display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:center;max-width:1280px;margin:0 auto;opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s cubic-bezier(.16,1,.3,1)}
+.story.in{opacity:1;transform:none}
+.story h2{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.2;letter-spacing:-.01em;color:var(--text);text-wrap:balance}
+.story h2 em{font-style:italic;font-weight:400;color:var(--acc)}
+.story p{margin-top:16px;font-size:14.5px;line-height:1.9;color:var(--body);max-width:44ch}
+
+.duo{display:grid;grid-template-columns:.85fr 1.15fr;gap:16px;align-items:end}
+.capline{margin-top:8px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+.mframe{background:var(--mat);padding:8px;box-shadow:0 18px 40px -20px rgba(0,0,0,.6)}
+.mframe .mim{aspect-ratio:4/3;overflow:hidden;background:var(--surface)}
+.mframe .mim img{width:100%;height:100%;object-fit:cover;display:block}
+.iframe{background:var(--surface);border:1px solid var(--line)}
+.iframe .iim{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:clamp(14px,3vw,26px)}
+.iframe .iim svg{width:100%;height:100%;color:var(--mute)}
+
+.final{min-height:64vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:clamp(70px,12vw,130px) var(--m)}
+.final .box{max-width:640px}
+
+@media(max-width:860px){
+  .story{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr 1.2fr}
+}
 
 /* ===== navegação fixa ===== */
 .hud{position:fixed;z-index:30;pointer-events:none;inset:0 0 auto 0}
@@ -147,69 +155,173 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <div class="bar"><i id="loadBar"></i></div>
 </div>
 
-<div id="stage"></div>
-<div class="vignette"></div>
 <div class="grain"></div>
 
-<div class="ov center" data-range="0,0.09" id="ov0">
-  <div class="box">
-    <span class="k">Project Ar · Climatização de alto padrão</span>
-    <h1 class="se">A climatização<br>que <em>não se vê</em>.</h1>
-    <p>Role para atravessar o projeto — do primeiro cálculo à obra pronta.</p>
-  </div>
-</div>
+<div class="home">
 
-<div class="ov left" data-range="0.14,0.30" id="ov1">
-  <div class="box">
-    <span class="k">Carga térmica</span>
-    <h1 class="se">O cálculo vem<br>antes do <em>equipamento</em>.</h1>
-    <p>Ambiente a ambiente, considerando orientação solar, envidraçamento e ocupação real.</p>
-    <div class="tagpair"><span>Haras Larissa</span><span>Monte Mor</span></div>
+  <div class="hero">
+    <div class="box">
+      <span class="k">Project Ar · Climatização de alto padrão</span>
+      <h1 class="se">A climatização<br>que <em>não se vê</em>.</h1>
+      <p>O que aparece é a arquitetura. O que sustenta o conforto fica por trás dela — e é aí que o projeto acontece.</p>
+    </div>
+    <span class="scrollcue">Role para ver o projeto</span>
   </div>
-</div>
 
-<div class="ov right" data-range="0.34,0.50" id="ov2">
-  <div class="box">
-    <span class="k">Distribuição</span>
-    <h1 class="se">O traçado nasce<br>com a <em>arquitetura</em>.</h1>
-    <p>O difusor entra no desenho junto com a marcenaria — não depois, no que sobra do forro.</p>
-    <div class="tagpair"><span>Vila Madalena</span><span>Estúdio Cantú</span></div>
-  </div>
-</div>
+  <section class="story" id="story-01">
+    <div class="duo">
+      <div><div class="mframe"><div class="mim"><img src="img/hvac/master-01-technical.webp" alt="Infraestrutura de climatização acima do forro" loading="lazy" decoding="async"></div></div><div class="capline">Invisível</div></div>
+      <div><div class="mframe"><div class="mim"><img src="img/hvac/master-01-architectural.webp" alt="Sala integrada com climatização invisível" loading="lazy" decoding="async"></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 01 · Infraestrutura</span>
+      <h2 class="se">Tudo começa <em>antes</em> do forro.</h2>
+      <p>E termina quando a climatização desaparece na arquitetura.</p>
+    </div>
+  </section>
 
-<div class="ov left" data-range="0.54,0.70" id="ov3">
-  <div class="box">
-    <span class="k">Setores privativos</span>
-    <h1 class="se">Cada ambiente,<br>sua própria <em>condição</em>.</h1>
-    <p>Multipavimento com detalhamento de furos em laje, drenos isolados e pontos de força.</p>
-    <div class="tagpair"><span>Jardim Paulista</span><span>Pace Arq.</span></div>
-  </div>
-</div>
+  <section class="story" id="story-02">
+    <div class="duo">
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="20" y="18" width="180" height="14" rx="3"/>
+        <path d="M45 32 V58 M95 32 V72 M145 32 V58 M185 32 V72"/>
+        <rect x="30" y="58" width="30" height="8" rx="2"/>
+        <rect x="80" y="72" width="30" height="8" rx="2"/>
+        <rect x="130" y="58" width="30" height="8" rx="2"/>
+        <rect x="170" y="72" width="30" height="8" rx="2"/>
+        <path d="M45 66 l-6 10 M45 66 l6 10"/>
+        <path d="M95 80 l-6 10 M95 80 l6 10"/>
+        <path d="M145 66 l-6 10 M145 66 l6 10"/>
+        <path d="M185 80 l-6 10 M185 80 l6 10"/>
+        <circle cx="20" cy="25" r="2" fill="currentColor" stroke="none"/>
+      </svg></div></div><div class="capline">Invisível</div></div>
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="18" y="18" width="184" height="124" rx="2"/>
+        <path d="M18 60 H202 M18 100 H202"/>
+        <rect x="40" y="34" width="26" height="6" rx="2"/>
+        <rect x="96" y="34" width="26" height="6" rx="2"/>
+        <rect x="152" y="34" width="26" height="6" rx="2"/>
+        <rect x="40" y="118" width="26" height="6" rx="2"/>
+        <rect x="96" y="118" width="26" height="6" rx="2"/>
+        <rect x="152" y="118" width="26" height="6" rx="2"/>
+        <circle cx="68" cy="80" r="1.6" fill="currentColor" stroke="none"/>
+        <circle cx="110" cy="80" r="1.6" fill="currentColor" stroke="none"/>
+        <circle cx="152" cy="80" r="1.6" fill="currentColor" stroke="none"/>
+      </svg></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 02 · Distribuição de ar</span>
+      <h2 class="se">Conforto também é <em>distribuição</em>.</h2>
+      <p>O traçado de duto e o posicionamento de cada difusor são desenhados junto com o forro — não encaixados depois, no que sobra.</p>
+    </div>
+  </section>
 
-<div class="ov right" data-range="0.74,0.90" id="ov4">
-  <div class="box">
-    <span class="k">Áreas externas</span>
-    <h1 class="se">O que não tem parede<br>também tem <em>projeto</em>.</h1>
-    <p>Climatização integrada às áreas sociais, varanda coberta e piscina.</p>
-    <div class="tagpair"><span>Fazenda Boa Vista</span><span>Porto Feliz</span></div>
-  </div>
-</div>
+  <section class="story" id="story-03">
+    <div class="duo">
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="14" y="60" width="30" height="40" rx="3"/>
+        <path d="M20 68 H38 M20 76 H38 M20 84 H38"/>
+        <path d="M44 80 H70 M70 80 V40 M70 80 V120 M70 40 H120 M70 120 H120 M120 40 V30 M120 120 V130 M120 80 H160"/>
+        <rect x="160" y="20" width="34" height="20" rx="3"/>
+        <rect x="160" y="110" width="34" height="20" rx="3"/>
+        <rect x="160" y="65" width="34" height="20" rx="3"/>
+      </svg></div></div><div class="capline">Invisível</div></div>
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 30 H200 M20 30 V140 M200 30 V140 M20 140 H200 M70 30 V140"/>
+        <rect x="90" y="30" width="50" height="6" rx="2"/>
+        <path d="M60 60 H90 M140 60 H170"/>
+        <circle cx="115" cy="33" r="1.6" fill="currentColor" stroke="none"/>
+      </svg></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 03 · VRV / VRF</span>
+      <h2 class="se">Alta performance. <em>Baixa presença</em> visual.</h2>
+      <p>Um único sistema central atende múltiplos ambientes com controle independente — sem unidades expostas, sem ruído desnecessário.</p>
+    </div>
+  </section>
 
-<div class="ov center" data-range="0.93,1.01" id="ov5">
-  <div class="box">
-    <span class="k">Fim da travessia</span>
-    <h1 class="se">Vamos desenhar<br>a <em>sua</em>?</h1>
-    <p>Conte sobre a obra. Quanto mais cedo o projeto entra, mais barata e mais limpa fica a solução — retorno em até 1 dia útil.</p>
-    <div class="cta-row">
-      <a class="btn btn-solid" href="https://wa.me/5511963299164" target="_blank" rel="noopener">Falar no WhatsApp</a>
-      <button class="btn btn-ghost" type="button" data-panel="contato">Ver todos os contatos</button>
+  <section class="story" id="story-04">
+    <div class="duo">
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 40 H140 M140 40 V140"/>
+        <rect x="60" y="34" width="40" height="10" rx="2"/>
+        <path d="M60 44 l6 10 M100 44 l-6 10 M70 44 V60 M90 44 V60"/>
+        <path d="M150 34 H160 M150 44 H160 M155 34 V44"/>
+        <path d="M175 20 V150" stroke-dasharray="2 4"/>
+      </svg></div></div><div class="capline">Invisível</div></div>
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 50 H210"/>
+        <path d="M80 50 V44 H140 V50"/>
+        <path d="M10 130 H210 M40 50 V130 M180 50 V130"/>
+        <circle cx="110" cy="90" r="1.6" fill="currentColor" stroke="none"/>
+      </svg></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 04 · Difusores e grelhas</span>
+      <h2 class="se">Quando cada detalhe <em>faz parte</em> do projeto.</h2>
+      <p>A grelha e o difusor são especificados como qualquer outro acabamento — alinhados ao forro, à luz e à marcenaria.</p>
+    </div>
+  </section>
+
+  <section class="story" id="story-05">
+    <div class="duo">
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M40 40 L180 40 L150 60 L10 60 Z"/>
+        <path d="M40 70 L180 70 L150 90 L10 90 Z"/>
+        <path d="M40 100 L180 100 L150 120 L10 120 Z"/>
+        <path d="M25 60 V90 M165 60 V90 M25 90 V120 M165 90 V120"/>
+      </svg></div></div><div class="capline">Invisível</div></div>
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 130 L20 40 L110 20 L200 40 L200 130"/>
+        <path d="M20 40 L200 40 M20 130 H200"/>
+        <path d="M60 130 V60 M160 130 V60" stroke-dasharray="2 5" opacity=".6"/>
+      </svg></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 05 · Compatibilização</span>
+      <h2 class="se">Engenharia que <em>respeita</em> a arquitetura.</h2>
+      <p>Estrutura, elétrica, hidráulica e climatização são conferidas juntas, antes da obra — para que nada precise ser refeito depois.</p>
+    </div>
+  </section>
+
+  <section class="story" id="story-06">
+    <div class="duo">
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M110 20 L200 60 V140 H20 V60 Z"/>
+        <path d="M20 60 L110 20 L200 60"/>
+        <path d="M70 140 V95 H150 V140"/>
+        <circle cx="110" cy="60" r="2" fill="currentColor" stroke="none"/>
+        <path d="M60 110 H80 M140 110 H160" stroke-dasharray="2 4"/>
+      </svg></div></div><div class="capline">Invisível</div></div>
+      <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 140 L10 40 L210 40 L210 140"/>
+        <path d="M10 40 L60 20 L160 20 L210 40"/>
+        <path d="M60 20 V40 M160 20 V40"/>
+        <rect x="130" y="80" width="50" height="60"/>
+        <path d="M10 140 H210"/>
+        <circle cx="185" cy="55" r="3" fill="currentColor" stroke="none"/>
+      </svg></div></div><div class="capline">Resultado</div></div>
+    </div>
+    <div class="story-text">
+      <span class="k">Historia 06 · Sistema completo</span>
+      <h2 class="se">Climatização projetada para fazer parte <em>do todo</em>.</h2>
+      <p>O resultado não é um sistema de ar-condicionado. É um ambiente que simplesmente funciona.</p>
+    </div>
+  </section>
+
+  <div class="final">
+    <div class="box">
+      <span class="k">Vamos desenhar a sua?</span>
+      <h1 class="se" style="font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.16;color:var(--text);text-wrap:balance">Seu projeto começa <em style="font-style:italic;color:var(--acc)">antes</em> da primeira instalação.</h1>
+      <p style="margin-top:20px;font-size:14.5px;color:var(--body);max-width:44ch;margin-left:auto;margin-right:auto;line-height:1.9">Quanto mais cedo o projeto entra, mais barata e mais limpa fica a solução — retorno em até 1 dia útil.</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="https://wa.me/5511963299164" target="_blank" rel="noopener">Falar sobre meu projeto</a>
+        <button class="btn btn-ghost" type="button" data-panel="obras">Ver obras</button>
+      </div>
     </div>
   </div>
+
 </div>
-
-<span class="hint" id="hint">Role para atravessar</span>
-
-<div class="scroller"><div class="spacer"></div></div>
 
 <!-- ===== navegação fixa ===== -->
 <div class="hud">
@@ -352,28 +464,22 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
 </button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var loader = document.getElementById('loader');
   var bar = document.getElementById('loadBar');
-  var hint = document.getElementById('hint');
 
   document.getElementById('home').addEventListener('click', function(e){
     e.preventDefault();
     window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
   });
 
-  /* progresso visual do loader, independente do 3D ter sucesso ou não */
   var pct = 0;
   var iv = setInterval(function(){
-    pct = Math.min(96, pct + Math.random()*22);
+    pct = Math.min(96, pct + Math.random()*26);
     bar.style.width = pct+'%';
-  }, 140);
-
-  /* se o 3D não iniciar (CDN indisponível, WebGL bloqueado etc.), cai para
-     um herói estático em vez de travar a página com o loader preso */
+  }, 110);
   var settled = false;
   function reveal(){
     if(settled) return;
@@ -382,145 +488,20 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     bar.style.width='100%';
     setTimeout(function(){ loader.classList.add('hide'); }, 260);
   }
-  function fallbackStatic(err){
-    if(err) console.error('Travessia 3D indisponível, usando modo estático:', err);
-    reveal();
-    document.body.classList.add('no-3d');
-    var ov0 = document.getElementById('ov0');
-    ov0.style.opacity = 1;
-    ov0.classList.add('on');
-    if(hint) hint.classList.add('hide');
-  }
-  setTimeout(function(){ if(!settled) fallbackStatic(new Error('tempo de carregamento excedido')); }, 8000);
+  addEventListener('load', function(){ setTimeout(reveal, 250); });
+  setTimeout(reveal, 1800);
 
-  try{
-
-  /* ================= THREE.JS — travessia 3D ================= */
-  var stageEl = document.getElementById('stage');
-  var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0B0A08);
-  scene.fog = new THREE.FogExp2(0x0B0A08, 0.028);
-
-  var camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 200);
-  var renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1, 1.6));
-  renderer.setSize(innerWidth, innerHeight);
-  stageEl.appendChild(renderer.domElement);
-
-  scene.add(new THREE.HemisphereLight(0xfff2df, 0x14100a, 0.9));
-  var key = new THREE.DirectionalLight(0xffe8c9, 0.6);
-  key.position.set(4,6,3);
-  scene.add(key);
-
-  /* caminho da câmera: curva suave avançando no eixo Z negativo */
-  var waypoints = [
-    new THREE.Vector3(0, 0.4, 8),
-    new THREE.Vector3(1.4, 0.6, 2),
-    new THREE.Vector3(-1.6, 0.3, -6),
-    new THREE.Vector3(1.8, 0.7, -14),
-    new THREE.Vector3(-1.4, 0.4, -22),
-    new THREE.Vector3(0.6, 0.5, -30),
-    new THREE.Vector3(0, 0.6, -38)
-  ];
-  var curve = new THREE.CatmullRomCurve3(waypoints, false, 'catmullrom', 0.4);
-
-  /* quadros flutuantes com fotos reais das obras */
-  function makeFrame(src, t, side, w, h){
-    var group = new THREE.Group();
-    var tex = new THREE.TextureLoader().load(src);
-    tex.encoding = THREE.sRGBEncoding;
-    var mat = new THREE.MeshBasicMaterial({map:tex, toneMapped:false});
-    var geo = new THREE.PlaneGeometry(w,h);
-    var mesh = new THREE.Mesh(geo, mat);
-    group.add(mesh);
-
-    // moldura clara (passe-partout) atrás da foto, para separar do fundo escuro
-    var matBoardMat = new THREE.MeshBasicMaterial({color:0xF3EEE6, toneMapped:false});
-    var matBoard = new THREE.Mesh(new THREE.PlaneGeometry(w*1.14,h*1.14), matBoardMat);
-    matBoard.position.z = -0.03;
-    group.add(matBoard);
-
-    var p = curve.getPointAt(t);
-    var tangent = curve.getTangentAt(t).normalize();
-    var up = new THREE.Vector3(0,1,0);
-    var side3 = new THREE.Vector3().crossVectors(tangent, up).normalize();
-    var pos = p.clone().addScaledVector(side3, side * 3.1).addScaledVector(up, 0.1*side);
-    group.position.copy(pos);
-    scene.add(group);
-    return group;
-  }
-
-  var frames = [
-    makeFrame('img/sala-jantar-800.webp',    0.20,  1, 3.6, 2.25),
-    makeFrame('img/difusor-linear-800.webp', 0.42, -1, 3.0, 2.25),
-    makeFrame('img/suite-800.webp',          0.62,  1, 3.2, 2.4),
-    makeFrame('img/beiral-madeira-800.webp', 0.82, -1, 2.4, 3.2)
-  ];
-
-  function onResize(){
-    camera.aspect = innerWidth/innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-  }
-  addEventListener('resize', onResize);
-
-  /* ================= SCROLL -> PROGRESSO ================= */
-  var target = 0, prog = 0;
-  function onScroll(){
-    var doc = document.documentElement;
-    var max = doc.scrollHeight - innerHeight;
-    target = max>0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0;
-  }
-  addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-
-  /* ================= OVERLAYS DE TEXTO ================= */
-  var ovs = Array.from(document.querySelectorAll('.ov')).map(function(el){
-    var r = el.getAttribute('data-range').split(',').map(Number);
-    return {el:el, a:r[0], b:r[1]};
-  });
-  function smoothstep(edge0, edge1, x){
-    var t = Math.min(1, Math.max(0, (x-edge0)/(edge1-edge0)));
-    return t*t*(3-2*t);
-  }
-  function updateOverlays(p){
-    ovs.forEach(function(o){
-      var fadeIn = smoothstep(o.a, o.a+0.035, p);
-      var fadeOut = 1-smoothstep(o.b-0.035, o.b, p);
-      var v = Math.min(fadeIn, fadeOut);
-      o.el.style.opacity = v;
-      o.el.classList.toggle('on', v>0.05);
-    });
-    hint.classList.toggle('hide', p>0.04);
-  }
-
-  var clock = new THREE.Clock();
-  function animate(){
-    requestAnimationFrame(animate);
-    prog += (target-prog) * (reduce?1:0.07);
-    var t = Math.min(0.999, Math.max(0, prog));
-
-    var camPos = curve.getPointAt(t);
-    var lookT = Math.min(0.999, t+0.035);
-    var lookPos = curve.getPointAt(lookT);
-
-    var time = clock.getElapsedTime();
-    var bob = reduce?0:Math.sin(time*0.6)*0.03;
-
-    camera.position.set(camPos.x, camPos.y+0.5+bob, camPos.z);
-    camera.lookAt(lookPos.x, lookPos.y+0.5, lookPos.z);
-
-    frames.forEach(function(f){ f.lookAt(camera.position); });
-
-    updateOverlays(t);
-    renderer.render(scene, camera);
-  }
-
-  /* ================= START ================= */
-  setTimeout(function(){ reveal(); animate(); }, 900);
-
-  }catch(err){
-    fallbackStatic(err);
+  /* ================= REVELAÇÃO DAS HISTORIAS AO ROLAR ================= */
+  var stories = document.querySelectorAll('.story');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, {threshold:0.18, rootMargin:'0px 0px -8% 0px'});
+    stories.forEach(function(s){ io.observe(s); });
+  } else {
+    stories.forEach(function(s){ s.classList.add('in'); });
   }
 })();
 </script>
