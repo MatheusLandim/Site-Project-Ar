@@ -53,12 +53,28 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* ===== home narrativa ===== */
 .home{position:relative;z-index:3}
-.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px var(--m) 60px}
-.hero .box{max-width:720px}
-.hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.1rem,5.6vw,4.2rem);line-height:1.14;letter-spacing:-.01em;color:var(--text);text-wrap:balance}
-.hero h1 em{font-style:italic;color:var(--acc);font-weight:400}
-.hero p{margin-top:20px;font-size:14.5px;color:var(--body);max-width:44ch;margin-left:auto;margin-right:auto;line-height:1.9}
-.scrollcue{margin-top:56px;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);opacity:.85}
+.scrollcue{font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);opacity:.85}
+
+/* ===== experiência 3D raio-x (historia 01) ===== */
+.experience{position:relative;height:340vh;background:var(--bg)}
+.experience.h260{height:260vh}
+.xr-pin{position:relative;height:100svh;overflow:hidden;background:var(--bg)}
+.xr-photo{position:absolute;inset:0;z-index:1}
+.xr-photo img{width:100%;height:100%;object-fit:cover;will-change:filter,opacity}
+.duct-canvas{position:absolute;inset:0;z-index:2;width:100%;height:100%;display:block;opacity:0}
+.xr-pin::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;background:linear-gradient(to top, var(--bg) 0%, rgba(11,10,8,.72) 38%, transparent 100%)}
+.hotspot{position:absolute;z-index:4;top:0;left:0;transform:translate(-50%,-100%);pointer-events:none;opacity:0;transition:opacity .25s ease;text-align:center}
+.hotspot .dot{width:5px;height:5px;border-radius:50%;background:var(--acc);margin:0 auto 9px}
+.hotspot .lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text);background:rgba(11,10,8,.72);backdrop-filter:blur(6px);padding:7px 11px;white-space:nowrap;display:inline-block}
+.hotspot .lbl small{display:block;color:var(--mute);font-size:8.5px;letter-spacing:.1em;margin-top:3px;font-family:'Jost',sans-serif}
+.xr-text{position:absolute;left:0;right:0;bottom:clamp(50px,9vh,100px);z-index:5;text-align:center;padding:0 var(--m);pointer-events:none}
+.xr-text .box{max-width:620px;margin:0 auto}
+.xr-line{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.26;color:var(--text);text-wrap:balance;opacity:1;transition:opacity .45s ease;min-height:2.6em}
+.xr-line em{font-style:italic;font-weight:400;color:var(--acc)}
+.experience .scrollcue{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:6;transition:opacity .5s}
+
+.duo-fallback{padding:clamp(60px,10vw,120px) var(--m);display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:center;max-width:1280px;margin:0 auto}
+@media(max-width:860px){.duo-fallback{grid-template-columns:1fr}}
 
 .story{padding:clamp(60px,10vw,120px) var(--m);display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:center;max-width:1280px;margin:0 auto;opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s cubic-bezier(.16,1,.3,1)}
 .story.in{opacity:1;transform:none}
@@ -97,6 +113,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .menu button{background:none;border:0;cursor:pointer;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);transition:color .4s}
 .menu button:hover{color:var(--text)}
 @media(max-width:640px){.menu{gap:16px}}
+@media(max-width:480px){.wm b{display:none}.menu{gap:12px}.menu button{font-size:9px;letter-spacing:.18em}}
 
 /* ===== painéis ===== */
 .panel{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .7s cubic-bezier(.5,0,.15,1);visibility:hidden}
@@ -162,16 +179,26 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 
 <div class="home">
 
-  <div class="hero">
-    <div class="box">
-      <span class="k">Project Ar · Climatização de alto padrão</span>
-      <h1 class="se">A climatização<br>que <em>não se vê</em>.</h1>
-      <p>O que aparece é a arquitetura. O que sustenta o conforto fica por trás dela — e é aí que o projeto acontece.</p>
-    </div>
-    <span class="scrollcue">Role para ver o projeto</span>
-  </div>
+  <section class="experience" id="experience">
+    <div class="xr-pin" id="xrPin">
+      <div class="xr-photo"><img id="xrPhoto" src="img/hvac/master-01-architectural.webp" width="400" height="299" alt="Sala de alto padrão com climatização integrada e praticamente invisível" fetchpriority="high"></div>
+      <canvas id="duct-canvas" class="duct-canvas" aria-hidden="true"></canvas>
 
-  <section class="story" id="story-01">
+      <div class="hotspot" id="hs1"><span class="dot"></span><span class="lbl">Duto principal<small>Ø 500 mm</small></span></div>
+      <div class="hotspot" id="hs2"><span class="dot"></span><span class="lbl">Plenum de distribuição<small>4 saídas</small></span></div>
+      <div class="hotspot" id="hs3"><span class="dot"></span><span class="lbl">Difusor linear<small>4 vias</small></span></div>
+
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Project Ar · Historia 01 — Infraestrutura</span>
+          <p class="xr-line" id="xrLine">A climatização que <em>não se vê</em>.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue">Role para revelar o projeto</span>
+    </div>
+  </section>
+
+  <section class="duo-fallback" id="fallback-01" hidden>
     <div class="duo">
       <div><div class="mframe"><div class="mim"><img src="img/hvac/master-01-technical.webp" width="460" height="343" alt="Infraestrutura de climatização acima do forro" loading="lazy" decoding="async"></div></div><div class="capline">Invisível</div></div>
       <div><div class="mframe"><div class="mim"><img src="img/hvac/master-01-architectural.webp" width="400" height="299" alt="Sala integrada com climatização invisível" loading="lazy" decoding="async"></div></div><div class="capline">Resultado</div></div>
@@ -183,7 +210,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     </div>
   </section>
 
-  <section class="story" id="story-02">
+  <section class="experience h260" id="experience-02">
+    <div class="xr-pin" id="xrPin02">
+      <div class="xr-photo"><img id="xrPhoto02" src="img/difusor-linear-1400.webp" width="1400" height="1050" alt="Difusor linear integrado ao forro em ambiente de alto padrão" loading="lazy"></div>
+      <canvas id="duct-canvas02" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="hotspot" id="hs02-1"><span class="dot"></span><span class="lbl">Plenum de distribuição<small>Entrada de ar tratado</small></span></div>
+      <div class="hotspot" id="hs02-2"><span class="dot"></span><span class="lbl">Ramal flexível<small>Ø 200 mm</small></span></div>
+      <div class="hotspot" id="hs02-3"><span class="dot"></span><span class="lbl">Difusor — 4 vias<small>Vazão regulada</small></span></div>
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Historia 02 — Distribuição de ar</span>
+          <p class="xr-line" id="xrLine02">Conforto também é <em>distribuição</em>.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue02">Role para continuar</span>
+    </div>
+  </section>
+
+  <section class="story" id="story-02" hidden>
     <div class="duo">
       <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="20" y="18" width="180" height="14" rx="3"/>
@@ -219,7 +263,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     </div>
   </section>
 
-  <section class="story" id="story-03">
+  <section class="experience h260" id="experience-03">
+    <div class="xr-pin" id="xrPin03">
+      <div class="xr-photo"><img id="xrPhoto03" src="img/apto-alto-padrao-1400.webp" width="1400" height="1866" alt="Apartamento de alto padrão com climatização VRF integrada" loading="lazy"></div>
+      <canvas id="duct-canvas03" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="hotspot" id="hs03-1"><span class="dot"></span><span class="lbl">Unidade condensadora<small>Área técnica</small></span></div>
+      <div class="hotspot" id="hs03-2"><span class="dot"></span><span class="lbl">Linha frigorígena<small>Isolada termicamente</small></span></div>
+      <div class="hotspot" id="hs03-3"><span class="dot"></span><span class="lbl">Unidade evaporadora<small>Cassete 4 vias</small></span></div>
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Historia 03 — VRV / VRF</span>
+          <p class="xr-line" id="xrLine03">Alta performance. <em>Baixa presença</em> visual.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue03">Role para continuar</span>
+    </div>
+  </section>
+
+  <section class="story" id="story-03" hidden>
     <div class="duo">
       <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="14" y="60" width="30" height="40" rx="3"/>
@@ -243,7 +304,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     </div>
   </section>
 
-  <section class="story" id="story-04">
+  <section class="experience h260" id="experience-04">
+    <div class="xr-pin" id="xrPin04">
+      <div class="xr-photo"><img id="xrPhoto04" src="img/forro-madeira-1400.webp" width="1400" height="1866" alt="Forro de madeira com difusor linear alinhado ao acabamento" loading="lazy"></div>
+      <canvas id="duct-canvas04" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="hotspot" id="hs04-1"><span class="dot"></span><span class="lbl">Duto de alimentação<small>Acima do forro</small></span></div>
+      <div class="hotspot" id="hs04-2"><span class="dot"></span><span class="lbl">Caixa plenum<small>Equaliza a pressão</small></span></div>
+      <div class="hotspot" id="hs04-3"><span class="dot"></span><span class="lbl">Difusor linear<small>4 vias · L=1200 mm</small></span></div>
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Historia 04 — Difusores e grelhas</span>
+          <p class="xr-line" id="xrLine04">Quando cada detalhe <em>faz parte</em> do projeto.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue04">Role para continuar</span>
+    </div>
+  </section>
+
+  <section class="story" id="story-04" hidden>
     <div class="duo">
       <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M20 40 H140 M140 40 V140"/>
@@ -266,7 +344,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     </div>
   </section>
 
-  <section class="story" id="story-05">
+  <section class="experience h260" id="experience-05">
+    <div class="xr-pin" id="xrPin05">
+      <div class="xr-photo"><img id="xrPhoto05" src="img/pe-direito-1400.webp" width="1400" height="1866" alt="Ambiente corporativo com compatibilização de forro, elétrica e climatização" loading="lazy"></div>
+      <canvas id="duct-canvas05" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="hotspot" id="hs05-1"><span class="dot"></span><span class="lbl">Climatização<small>Camada superior</small></span></div>
+      <div class="hotspot" id="hs05-2"><span class="dot"></span><span class="lbl">Elétrica<small>Camada intermediária</small></span></div>
+      <div class="hotspot" id="hs05-3"><span class="dot"></span><span class="lbl">Estrutura<small>Camada de referência</small></span></div>
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Historia 05 — Compatibilização</span>
+          <p class="xr-line" id="xrLine05">Engenharia que <em>respeita</em> a arquitetura.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue05">Role para continuar</span>
+    </div>
+  </section>
+
+  <section class="story" id="story-05" hidden>
     <div class="duo">
       <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M40 40 L180 40 L150 60 L10 60 Z"/>
@@ -287,7 +382,24 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     </div>
   </section>
 
-  <section class="story" id="story-06">
+  <section class="experience h260" id="experience-06">
+    <div class="xr-pin" id="xrPin06">
+      <div class="xr-photo"><img id="xrPhoto06" src="img/varanda-madeira-1400.webp" width="1400" height="1866" alt="Varanda coberta com climatização integrada ao forro de madeira" loading="lazy"></div>
+      <canvas id="duct-canvas06" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="hotspot" id="hs06-1"><span class="dot"></span><span class="lbl">Rede de dutos<small>Projetada por ambiente</small></span></div>
+      <div class="hotspot" id="hs06-2"><span class="dot"></span><span class="lbl">Distribuição<small>Equilibrada e silenciosa</small></span></div>
+      <div class="hotspot" id="hs06-3"><span class="dot"></span><span class="lbl">Climatização integrada<small>Invisível na arquitetura</small></span></div>
+      <div class="xr-text">
+        <div class="box">
+          <span class="k">Historia 06 — Sistema completo</span>
+          <p class="xr-line" id="xrLine06">Climatização projetada para fazer parte <em>do todo</em>.</p>
+        </div>
+      </div>
+      <span class="scrollcue" id="xrCue06">Role para continuar</span>
+    </div>
+  </section>
+
+  <section class="story" id="story-06" hidden>
     <div class="duo">
       <div><div class="iframe"><div class="iim"><svg viewBox="0 0 220 160" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M110 20 L200 60 V140 H20 V60 Z"/>
@@ -466,6 +578,642 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 <button class="wa" onclick="window.open('https://wa.me/5511963299164','_blank')" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
 </button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ================= EXPERIÊNCIA 3D "RAIO-X" — HISTORIA 01 ================= */
+(function(){
+  var expEl = document.getElementById('experience');
+  var pinEl = document.getElementById('xrPin');
+  var fallbackEl = document.getElementById('fallback-01');
+  var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function hasWebGL(){
+    try{
+      var c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    }catch(e){ return false; }
+  }
+
+  function fallback(){
+    expEl.style.display = 'none';
+    fallbackEl.hidden = false;
+  }
+
+  if(reduceMotion || !hasWebGL() || typeof THREE==='undefined' || typeof gsap==='undefined' || typeof ScrollTrigger==='undefined'){
+    fallback();
+    return;
+  }
+
+  try{
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  var isMobile = matchMedia('(max-width:760px)').matches;
+  var canvas = document.getElementById('duct-canvas');
+  var photoImg = document.getElementById('xrPhoto');
+  var lineEl = document.getElementById('xrLine');
+  var cueEl = document.getElementById('xrCue');
+  var hs = { 1: document.getElementById('hs1'), 2: document.getElementById('hs2'), 3: document.getElementById('hs3') };
+
+  function smooth(x,a,b){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
+
+  /* ---------- cena ---------- */
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1, isMobile?1.5:1.8));
+
+  scene.add(new THREE.HemisphereLight(0xfff2df, 0x14100a, 0.85));
+  var key = new THREE.DirectionalLight(0xffe8c9, 0.9); key.position.set(3,4,3); scene.add(key);
+  var rim = new THREE.DirectionalLight(0xC9A876, 0.55); rim.position.set(-3,1,-3); scene.add(rim);
+  scene.fog = new THREE.Fog(0x0B0A08, 3.4, 10.5);
+
+  /* ---------- materiais ---------- */
+  var ductMat    = new THREE.MeshStandardMaterial({color:0xC7C2B6, metalness:0.65, roughness:0.38, transparent:true, opacity:0});
+  var plenumMat  = new THREE.MeshStandardMaterial({color:0x3a352c, metalness:0.5,  roughness:0.5,  transparent:true, opacity:0});
+  var hangerMat  = new THREE.MeshStandardMaterial({color:0x211d17, metalness:0.7,  roughness:0.4,  transparent:true, opacity:0});
+
+  function slotTexture(){
+    var c = document.createElement('canvas'); c.width=160; c.height=40;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#EDE6D8'; ctx.fillRect(0,0,160,40);
+    ctx.fillStyle = '#9b9384';
+    for(var i=8;i<160;i+=12){ ctx.fillRect(i,5,4,30); }
+    return new THREE.CanvasTexture(c);
+  }
+  var diffuserMat = new THREE.MeshStandardMaterial({map:slotTexture(), metalness:0.25, roughness:0.6, transparent:true, opacity:0});
+  var allMats = [ductMat, plenumMat, hangerMat, diffuserMat];
+
+  var ductGroup = new THREE.Group();
+  scene.add(ductGroup);
+
+  /* ---------- sistema de dutos (procedural) ---------- */
+  var trunkPts = [
+    new THREE.Vector3(-3.4, 0.35, -0.3),
+    new THREE.Vector3(-1.6, 0.42,  0.25),
+    new THREE.Vector3( 0.0, 0.30, -0.15),
+    new THREE.Vector3( 1.7, 0.40,  0.3),
+    new THREE.Vector3( 3.4, 0.32, -0.2)
+  ];
+  var trunkCurve = new THREE.CatmullRomCurve3(trunkPts);
+  var trunkGeo = new THREE.TubeGeometry(trunkCurve, isMobile?40:72, 0.17, 12, false);
+  ductGroup.add(new THREE.Mesh(trunkGeo, ductMat));
+
+  for(var s=0.1; s<1; s+=0.22){
+    var hp = trunkCurve.getPointAt(s);
+    var hanger = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.5,6), hangerMat);
+    hanger.position.set(hp.x, hp.y+0.28, hp.z);
+    ductGroup.add(hanger);
+  }
+
+  var branchT = [0.24, 0.52, 0.8];
+  var hotspotPoints = [];
+  branchT.forEach(function(t, i){
+    var basePt = trunkCurve.getPointAt(t);
+    var dropPt = new THREE.Vector3(basePt.x + (i-1)*0.15, basePt.y - 0.55, basePt.z + 0.9);
+    var branchCurve = new THREE.CatmullRomCurve3([
+      basePt.clone(),
+      basePt.clone().lerp(dropPt, 0.45).add(new THREE.Vector3(0,-0.05,0)),
+      dropPt.clone()
+    ]);
+    var branchMesh = new THREE.Mesh(new THREE.TubeGeometry(branchCurve, isMobile?14:24, 0.08, 8, false), ductMat);
+    ductGroup.add(branchMesh);
+
+    var reducer = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.16,0.14,12), plenumMat);
+    reducer.position.copy(basePt);
+    reducer.lookAt(dropPt);
+    reducer.rotateX(Math.PI/2);
+    ductGroup.add(reducer);
+
+    var plenum = new THREE.Mesh(new THREE.BoxGeometry(0.32,0.16,0.24), plenumMat);
+    plenum.position.copy(dropPt).add(new THREE.Vector3(0,-0.1,0.15));
+    ductGroup.add(plenum);
+
+    var diff = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.03,0.14), diffuserMat);
+    diff.position.copy(plenum.position).add(new THREE.Vector3(0,-0.11,0.16));
+    ductGroup.add(diff);
+
+    hotspotPoints.push({branch:basePt.clone(), plenum:plenum.position.clone(), diffuser:diff.position.clone()});
+  });
+
+  /* ---------- caminho da câmera (ancorado na geometria real dos dutos) ---------- */
+  var trunkMid = trunkCurve.getPointAt(0.5);
+  var establishPos = new THREE.Vector3(0, 1.7, 5.3);
+  var establishLook = trunkMid.clone();
+
+  var camPosPts = [ establishPos.clone() ];
+  var camLookPts = [ establishLook.clone() ];
+  hotspotPoints.forEach(function(hp, i){
+    var side = (i % 2 === 0) ? 1 : -1;
+    var pos = hp.plenum.clone().add(new THREE.Vector3(side*0.9, 0.55, 1.35));
+    var look = hp.branch.clone().lerp(hp.plenum, 0.45);
+    camPosPts.push(pos);
+    camLookPts.push(look);
+  });
+  camPosPts.push(establishPos.clone());
+  camLookPts.push(establishLook.clone());
+
+  var camPosCurve = new THREE.CatmullRomCurve3(camPosPts);
+  var camLookCurve = new THREE.CatmullRomCurve3(camLookPts);
+  camera.position.copy(establishPos);
+  camera.lookAt(establishLook);
+
+  function fitCanvas(){
+    var w = pinEl.clientWidth, h = pinEl.clientHeight;
+    if(!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  fitCanvas();
+
+  var lines = [
+    'A climatização que <em>não se vê</em>.',
+    'Cada duto tem um <em>caminho</em>. Cada difusor, um propósito.',
+    'O resultado final é invisível.<br>A engenharia, <em>não</em>.'
+  ];
+  var curLine = -1;
+  function setLine(i){
+    if(i===curLine) return;
+    curLine = i;
+    lineEl.style.opacity = 0;
+    setTimeout(function(){ lineEl.innerHTML = lines[i]; lineEl.style.opacity = 1; }, 200);
+  }
+  setLine(0);
+
+  function updateHotspot(el, point, t, a, b){
+    if(!el || !point) return;
+    if(t < a || t > b){ el.style.opacity = 0; return; }
+    var v = point.clone().project(camera);
+    if(v.z > 1 || v.z < -1){ el.style.opacity = 0; return; }
+    var w = pinEl.clientWidth, h = pinEl.clientHeight;
+    el.style.left = ((v.x*0.5+0.5)*w) + 'px';
+    el.style.top = ((1-(v.y*0.5+0.5))*h) + 'px';
+    el.style.opacity = 1;
+  }
+
+  function updateProgress(p){
+    var revealIn = smooth(p, 0.0, 0.2);
+    var revealOut = 1 - smooth(p, 0.78, 1.0);
+    var ductVis = Math.min(revealIn, revealOut);
+
+    allMats.forEach(function(m){ m.opacity = ductVis * 0.98; });
+    canvas.style.opacity = ductVis > 0.02 ? 1 : 0;
+    photoImg.style.filter = 'brightness(' + (1 - ductVis*0.72) + ') saturate(' + (1 - ductVis*0.82) + ')';
+
+    if(p < 0.2){
+      camera.position.copy(establishPos);
+      camera.lookAt(establishLook);
+    } else if(p < 0.78){
+      var ft = (p-0.2)/0.58;
+      camera.position.copy(camPosCurve.getPointAt(Math.min(0.999, ft)));
+      camera.lookAt(camLookCurve.getPointAt(Math.min(0.999, ft)));
+    } else {
+      var ft2 = smooth((p-0.78)/0.22, 0, 1);
+      camera.position.lerpVectors(camPosCurve.getPointAt(0.999), establishPos, ft2);
+      camera.lookAt(camLookCurve.getPointAt(0.999).clone().lerp(establishLook, ft2));
+    }
+
+    var localT = (p-0.2)/0.58;
+    updateHotspot(hs[1], hotspotPoints[0] && hotspotPoints[0].branch,   localT, 0.06, 0.30);
+    updateHotspot(hs[2], hotspotPoints[1] && hotspotPoints[1].plenum,   localT, 0.40, 0.62);
+    updateHotspot(hs[3], hotspotPoints[2] && hotspotPoints[2].diffuser, localT, 0.70, 0.94);
+
+    if(p < 0.24) setLine(0);
+    else if(p < 0.76) setLine(1);
+    else setLine(2);
+
+    cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
+    renderer.render(scene, camera);
+  }
+  updateProgress(0);
+
+  ScrollTrigger.create({
+    trigger: expEl,
+    start: 'top top',
+    end: 'bottom bottom',
+    pin: pinEl,
+    scrub: 0.6,
+    onUpdate: function(self){ updateProgress(self.progress); },
+    onRefresh: function(){ fitCanvas(); }
+  });
+
+  addEventListener('resize', function(){ fitCanvas(); ScrollTrigger.refresh(); });
+
+  /* leve respiração da cena enquanto a seção está em tela */
+  var active = false, clock = new THREE.Clock(), raf = null;
+  function tick(){
+    if(!active) return;
+    var t = clock.getElapsedTime();
+    ductGroup.rotation.y = Math.sin(t*0.12)*0.01;
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(tick);
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      active = entries[0].isIntersecting;
+      if(active && !raf) tick();
+    }, {threshold:0.05}).observe(expEl);
+  }
+
+  }catch(err){
+    console.error('Experiência 3D indisponível, usando modo estático:', err);
+    fallback();
+  }
+})();
+</script>
+
+<script>
+/* ================= EXPERIÊNCIAS 3D "RAIO-X" — HISTORIAS 02–06 ================= */
+/* motor compartilhado: mesma técnica da Historia 01 (fog, materiais, câmera
+   ancorada nos hotspots reais, texto por faixa de progresso), parametrizada
+   por história para variar geometria, cor de material e foto de fundo. */
+(function(){
+  var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function hasWebGL(){
+    try{
+      var c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    }catch(e){ return false; }
+  }
+  var webglOK = hasWebGL();
+  var libsOK = typeof THREE!=='undefined' && typeof gsap!=='undefined' && typeof ScrollTrigger!=='undefined';
+
+  function smooth(x,a,b){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
+
+  var sharedSlotTexture = null;
+  function slotTexture(){
+    if(sharedSlotTexture) return sharedSlotTexture;
+    var c = document.createElement('canvas'); c.width=160; c.height=40;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#EDE6D8'; ctx.fillRect(0,0,160,40);
+    ctx.fillStyle = '#9b9384';
+    for(var i=8;i<160;i+=12){ ctx.fillRect(i,5,4,30); }
+    sharedSlotTexture = new THREE.CanvasTexture(c);
+    return sharedSlotTexture;
+  }
+
+  function buildBranchSystem(group, mats, o){
+    var trunkCurve = new THREE.CatmullRomCurve3(o.trunkPts);
+    var trunkGeo = new THREE.TubeGeometry(trunkCurve, o.segs, o.tubeRadius, 12, false);
+    group.add(new THREE.Mesh(trunkGeo, mats.duct));
+
+    if(o.hangerStep){
+      for(var s=0.1; s<1; s+=o.hangerStep){
+        var hp = trunkCurve.getPointAt(s);
+        var hanger = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.5,6), mats.hanger);
+        hanger.position.set(hp.x, hp.y+0.28, hp.z);
+        group.add(hanger);
+      }
+    }
+
+    var plenumSize = o.plenumSize || [0.32,0.16,0.24];
+    var diffSize = o.diffuserSize || [0.62,0.03,0.14];
+    var hotspotPoints = [];
+    (o.branchT||[]).forEach(function(t,i){
+      var basePt = trunkCurve.getPointAt(t);
+      var side = (i%2===0)?1:-1;
+      var dropPt = o.dropFn ? o.dropFn(basePt,i,side) : new THREE.Vector3(basePt.x+side*0.15, basePt.y-0.55, basePt.z+0.9);
+      var branchCurve = new THREE.CatmullRomCurve3([
+        basePt.clone(),
+        basePt.clone().lerp(dropPt,0.45).add(new THREE.Vector3(0,-0.05,0)),
+        dropPt.clone()
+      ]);
+      var branchMesh = new THREE.Mesh(new THREE.TubeGeometry(branchCurve, o.branchSegs, o.branchRadius, 8, false), mats.duct);
+      group.add(branchMesh);
+
+      var reducer = new THREE.Mesh(new THREE.CylinderGeometry(o.branchRadius*1.1, o.tubeRadius*0.95, 0.14, 12), mats.plenum);
+      reducer.position.copy(basePt);
+      reducer.lookAt(dropPt);
+      reducer.rotateX(Math.PI/2);
+      group.add(reducer);
+
+      var plenum = new THREE.Mesh(new THREE.BoxGeometry(plenumSize[0],plenumSize[1],plenumSize[2]), mats.plenum);
+      plenum.position.copy(dropPt).add(new THREE.Vector3(0,-0.1,0.15));
+      group.add(plenum);
+
+      var diff = new THREE.Mesh(new THREE.BoxGeometry(diffSize[0],diffSize[1],diffSize[2]), mats.diffuser);
+      diff.position.copy(plenum.position).add(new THREE.Vector3(0,-0.11,0.16));
+      group.add(diff);
+
+      hotspotPoints.push({branch:basePt.clone(), plenum:plenum.position.clone(), diffuser:diff.position.clone()});
+    });
+
+    return { trunkCurve: trunkCurve, hotspotPoints: hotspotPoints };
+  }
+
+  function vec3(a){ return new THREE.Vector3(a[0],a[1],a[2]); }
+
+  function mountXray(cfg){
+    var expEl = document.getElementById('experience-'+cfg.id);
+    var pinEl = document.getElementById('xrPin'+cfg.id);
+    var fallbackEl = document.getElementById('story-'+cfg.id);
+    if(!expEl || !pinEl) return;
+
+    function fallback(){
+      expEl.style.display = 'none';
+      if(fallbackEl) fallbackEl.hidden = false;
+    }
+
+    if(reduceMotion || !webglOK || !libsOK){ fallback(); return; }
+
+    function doMount(){
+      try{
+        var isMobile = matchMedia('(max-width:760px)').matches;
+        var canvas = document.getElementById('duct-canvas'+cfg.id);
+        var photoImg = document.getElementById('xrPhoto'+cfg.id);
+        var lineEl = document.getElementById('xrLine'+cfg.id);
+        var cueEl = document.getElementById('xrCue'+cfg.id);
+        var hs = { 1: document.getElementById('hs'+cfg.id+'-1'), 2: document.getElementById('hs'+cfg.id+'-2'), 3: document.getElementById('hs'+cfg.id+'-3') };
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+        var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+        renderer.setPixelRatio(Math.min(devicePixelRatio||1, isMobile?1.5:1.8));
+
+        scene.add(new THREE.HemisphereLight(0xfff2df, 0x14100a, 0.85));
+        var key = new THREE.DirectionalLight(0xffe8c9, 0.9); key.position.set(3,4,3); scene.add(key);
+        var rim = new THREE.DirectionalLight(0xC9A876, 0.55); rim.position.set(-3,1,-3); scene.add(rim);
+        scene.fog = new THREE.Fog(0x0B0A08, 3.4, 10.5);
+
+        var ductMat = new THREE.MeshStandardMaterial({color:cfg.ductColor||0xC7C2B6, metalness:cfg.ductMetal!=null?cfg.ductMetal:0.65, roughness:cfg.ductRough!=null?cfg.ductRough:0.38, transparent:true, opacity:0});
+        var plenumMat = new THREE.MeshStandardMaterial({color:cfg.plenumColor||0x3a352c, metalness:0.5, roughness:0.5, transparent:true, opacity:0});
+        var hangerMat = new THREE.MeshStandardMaterial({color:0x211d17, metalness:0.7, roughness:0.4, transparent:true, opacity:0});
+        var diffuserMat = (cfg.diffuserTextured===false)
+          ? new THREE.MeshStandardMaterial({color:cfg.diffuserColor||0xEDE6D8, metalness:0.15, roughness:0.55, transparent:true, opacity:0})
+          : new THREE.MeshStandardMaterial({map:slotTexture(), metalness:0.25, roughness:0.6, transparent:true, opacity:0});
+        var allMats = [ductMat, plenumMat, hangerMat, diffuserMat];
+
+        var ductGroup = new THREE.Group();
+        scene.add(ductGroup);
+
+        var built = buildBranchSystem(ductGroup, {duct:ductMat,plenum:plenumMat,hanger:hangerMat,diffuser:diffuserMat}, {
+          trunkPts: cfg.trunkPts.map(vec3),
+          segs: isMobile?40:72,
+          tubeRadius: cfg.tubeRadius,
+          hangerStep: cfg.hangerStep,
+          branchT: cfg.branchT,
+          branchSegs: isMobile?14:24,
+          branchRadius: cfg.branchRadius,
+          plenumSize: cfg.plenumSize,
+          diffuserSize: cfg.diffuserSize,
+          dropFn: cfg.dropFn
+        });
+        var trunkCurve = built.trunkCurve;
+        var hotspotPoints = built.hotspotPoints;
+
+        if(cfg.extra){ cfg.extra(THREE, ductGroup, allMats, trunkCurve); }
+
+        var trunkMid = trunkCurve.getPointAt(0.5);
+        var establishPos = cfg.establishPos ? vec3(cfg.establishPos) : new THREE.Vector3(0,1.7,5.3);
+        var establishLook = trunkMid.clone();
+
+        var camPosPts = [ establishPos.clone() ];
+        var camLookPts = [ establishLook.clone() ];
+        hotspotPoints.forEach(function(hp, i){
+          var side = (i % 2 === 0) ? 1 : -1;
+          var pos = hp.plenum.clone().add(new THREE.Vector3(side*0.9, 0.55, 1.35));
+          var look = hp.branch.clone().lerp(hp.plenum, 0.45);
+          camPosPts.push(pos);
+          camLookPts.push(look);
+        });
+        camPosPts.push(establishPos.clone());
+        camLookPts.push(establishLook.clone());
+        var camPosCurve = new THREE.CatmullRomCurve3(camPosPts);
+        var camLookCurve = new THREE.CatmullRomCurve3(camLookPts);
+        camera.position.copy(establishPos);
+        camera.lookAt(establishLook);
+
+        function fitCanvas(){
+          var w = pinEl.clientWidth, h = pinEl.clientHeight;
+          if(!w || !h) return;
+          renderer.setSize(w, h, false);
+          camera.aspect = w/h;
+          camera.updateProjectionMatrix();
+        }
+        fitCanvas();
+
+        var curLine = -1;
+        function setLine(i){
+          if(i===curLine || !cfg.lines[i]) return;
+          curLine = i;
+          lineEl.style.opacity = 0;
+          setTimeout(function(){ lineEl.innerHTML = cfg.lines[i]; lineEl.style.opacity = 1; }, 200);
+        }
+        setLine(0);
+
+        function updateHotspot(el, point, t, a, b){
+          if(!el || !point) return;
+          if(t < a || t > b){ el.style.opacity = 0; return; }
+          var v = point.clone().project(camera);
+          if(v.z > 1 || v.z < -1){ el.style.opacity = 0; return; }
+          var w = pinEl.clientWidth, h = pinEl.clientHeight;
+          el.style.left = ((v.x*0.5+0.5)*w) + 'px';
+          el.style.top = ((1-(v.y*0.5+0.5))*h) + 'px';
+          el.style.opacity = 1;
+        }
+
+        var hsCfg = cfg.hotspots;
+
+        function updateProgress(p){
+          var revealIn = smooth(p, 0.0, 0.2);
+          var revealOut = 1 - smooth(p, 0.78, 1.0);
+          var ductVis = Math.min(revealIn, revealOut);
+
+          allMats.forEach(function(m){ m.opacity = ductVis * 0.98; });
+          canvas.style.opacity = ductVis > 0.02 ? 1 : 0;
+          photoImg.style.filter = 'brightness(' + (1 - ductVis*0.72) + ') saturate(' + (1 - ductVis*0.82) + ')';
+
+          if(p < 0.2){
+            camera.position.copy(establishPos);
+            camera.lookAt(establishLook);
+          } else if(p < 0.78){
+            var ft = (p-0.2)/0.58;
+            camera.position.copy(camPosCurve.getPointAt(Math.min(0.999, ft)));
+            camera.lookAt(camLookCurve.getPointAt(Math.min(0.999, ft)));
+          } else {
+            var ft2 = smooth((p-0.78)/0.22, 0, 1);
+            camera.position.lerpVectors(camPosCurve.getPointAt(0.999), establishPos, ft2);
+            camera.lookAt(camLookCurve.getPointAt(0.999).clone().lerp(establishLook, ft2));
+          }
+
+          var localT = (p-0.2)/0.58;
+          hsCfg.forEach(function(h, k){
+            var pt = hotspotPoints[h.idx] && hotspotPoints[h.idx][h.part];
+            updateHotspot(hs[k+1], pt, localT, h.band[0], h.band[1]);
+          });
+
+          if(p < 0.24) setLine(0);
+          else if(p < 0.76) setLine(1);
+          else setLine(2);
+
+          cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
+          renderer.render(scene, camera);
+        }
+
+        var st = ScrollTrigger.create({
+          trigger: expEl,
+          start: 'top top',
+          end: 'bottom bottom',
+          pin: pinEl,
+          scrub: 0.6,
+          onUpdate: function(self){ updateProgress(self.progress); },
+          onRefresh: function(){ fitCanvas(); }
+        });
+        updateProgress(st.progress || 0);
+
+        addEventListener('resize', function(){ fitCanvas(); });
+
+        var active = false, clock = new THREE.Clock(), raf = null;
+        function tick(){
+          if(!active) return;
+          var t = clock.getElapsedTime();
+          ductGroup.rotation.y = Math.sin(t*0.12)*0.01;
+          renderer.render(scene, camera);
+          raf = requestAnimationFrame(tick);
+        }
+        if('IntersectionObserver' in window){
+          new IntersectionObserver(function(entries){
+            active = entries[0].isIntersecting;
+            if(active && !raf) tick();
+          }, {threshold:0.05}).observe(expEl);
+        }
+      }catch(err){
+        console.error('Experiência 3D ('+cfg.id+') indisponível, usando modo estático:', err);
+        fallback();
+      }
+    }
+
+    /* monta só quando a seção se aproxima da viewport (carregamento progressivo) */
+    if('IntersectionObserver' in window){
+      var lazyIo = new IntersectionObserver(function(entries){
+        if(entries[0].isIntersecting){ lazyIo.disconnect(); doMount(); }
+      }, {rootMargin:'700px 0px 700px 0px'});
+      lazyIo.observe(expEl);
+    } else {
+      doMount();
+    }
+  }
+
+  if(!(reduceMotion || !webglOK || !libsOK)){
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  mountXray({
+    id: '02',
+    trunkPts: [[-2.2,0.4,-0.15],[-0.7,0.45,0.2],[0.8,0.35,-0.1],[2.2,0.42,0.15]],
+    tubeRadius: 0.15,
+    branchT: [0.12, 0.38, 0.62, 0.88],
+    branchRadius: 0.07,
+    hangerStep: 0.18,
+    hotspots: [
+      {idx:0, part:'branch',   band:[0.04, 0.24]},
+      {idx:1, part:'plenum',   band:[0.30, 0.52]},
+      {idx:3, part:'diffuser', band:[0.72, 0.96]}
+    ],
+    lines: [
+      'Conforto também é <em>distribuição</em>.',
+      'Cada ramal alimenta um ambiente específico.',
+      'O resultado: temperatura uniforme,<br>em <em>silêncio</em>.'
+    ]
+  });
+
+  mountXray({
+    id: '03',
+    trunkPts: [[-2.6,0.15,-0.3],[-1.0,0.5,0.15],[0.8,0.3,-0.25],[2.6,0.55,0.1]],
+    tubeRadius: 0.09,
+    ductColor: 0xB08A5C, ductMetal: 0.8, ductRough: 0.25,
+    branchT: [0.2, 0.5, 0.82],
+    branchRadius: 0.05,
+    diffuserTextured: false,
+    diffuserColor: 0xEDE6D8,
+    diffuserSize: [0.5, 0.06, 0.34],
+    hotspots: [
+      {idx:0, part:'branch',   band:[0.05, 0.28]},
+      {idx:1, part:'plenum',   band:[0.40, 0.62]},
+      {idx:2, part:'diffuser', band:[0.70, 0.94]}
+    ],
+    lines: [
+      'Alta performance. <em>Baixa presença</em> visual.',
+      'Um sistema, múltiplos ambientes, controle independente.',
+      'Você não vê o equipamento.<br>Sente o <em>resultado</em>.'
+    ]
+  });
+
+  mountXray({
+    id: '04',
+    trunkPts: [[-0.9,0.32,0],[0,0.34,0.12],[0.9,0.3,-0.05]],
+    tubeRadius: 0.15,
+    branchT: [0.5],
+    branchRadius: 0.08,
+    diffuserSize: [0.9, 0.03, 0.16],
+    hangerStep: 0.5,
+    establishPos: [0, 1.2, 3.6],
+    hotspots: [
+      {idx:0, part:'branch',   band:[0.05, 0.34]},
+      {idx:0, part:'plenum',   band:[0.40, 0.62]},
+      {idx:0, part:'diffuser', band:[0.68, 0.94]}
+    ],
+    lines: [
+      'Quando cada detalhe <em>faz parte</em> do projeto.',
+      'A grelha é desenhada junto com o forro — não encontrada nele.',
+      'Isso também é <em>engenharia</em>.'
+    ]
+  });
+
+  mountXray({
+    id: '05',
+    trunkPts: [[-2.4,0.55,-0.1],[-0.8,0.58,0.15],[0.8,0.5,-0.1],[2.4,0.56,0.1]],
+    tubeRadius: 0.14,
+    branchT: [0.3, 0.65],
+    branchRadius: 0.07,
+    extra: function(THREE, group, allMats, trunkCurve){
+      var conduitMat = new THREE.MeshStandardMaterial({color:0x232019, metalness:0.6, roughness:0.4, transparent:true, opacity:0});
+      var beamMat = new THREE.MeshStandardMaterial({color:0x8B8478, metalness:0.1, roughness:0.75, transparent:true, opacity:0});
+      allMats.push(conduitMat, beamMat);
+      var conduitPts = trunkCurve.points.map(function(p){ return p.clone().add(new THREE.Vector3(0,-0.42,0.1)); });
+      var conduitCurve = new THREE.CatmullRomCurve3(conduitPts);
+      group.add(new THREE.Mesh(new THREE.TubeGeometry(conduitCurve, 40, 0.045, 8, false), conduitMat));
+      var beam = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.1, 0.32), beamMat);
+      beam.position.set(0, -0.85, -0.1);
+      group.add(beam);
+    },
+    hotspots: [
+      {idx:0, part:'branch', band:[0.06, 0.30]},
+      {idx:1, part:'branch', band:[0.42, 0.62]},
+      {idx:1, part:'plenum', band:[0.70, 0.94]}
+    ],
+    lines: [
+      'Engenharia que <em>respeita</em> a arquitetura.',
+      'Estrutura, elétrica e climatização, compatibilizadas antes da obra.',
+      'Sem gambiarra na <em>execução</em>.'
+    ]
+  });
+
+  mountXray({
+    id: '06',
+    trunkPts: [[-3.6,0.3,-0.3],[-1.8,0.45,0.2],[0,0.32,-0.15],[1.8,0.42,0.25],[3.6,0.3,-0.2]],
+    tubeRadius: 0.18,
+    branchT: [0.18, 0.4, 0.62, 0.84],
+    branchRadius: 0.08,
+    hangerStep: 0.18,
+    establishPos: [0, 1.8, 5.8],
+    hotspots: [
+      {idx:0, part:'branch',   band:[0.04, 0.22]},
+      {idx:2, part:'plenum',   band:[0.42, 0.62]},
+      {idx:3, part:'diffuser', band:[0.72, 0.96]}
+    ],
+    lines: [
+      'Climatização projetada para fazer parte <em>do todo</em>.',
+      'Cada peça, pensada antes da obra começar.',
+      'O resultado não é um sistema de ar-condicionado.<br>É um ambiente que simplesmente <em>funciona</em>.'
+    ]
+  });
+})();
+</script>
 
 <script>
 (function(){
