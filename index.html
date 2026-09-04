@@ -58,7 +58,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 /* ===== experiência 3D "do projeto à realização" ===== */
 .experience{position:relative;height:240vh;background:var(--bg)}
 .xr-pin{position:relative;height:100svh;overflow:hidden;background:var(--bg)}
-.duct-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block}
+.duct-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block;will-change:opacity,filter}
+.xr-photo{position:absolute;inset:0;z-index:2;overflow:hidden;opacity:0;pointer-events:none;will-change:opacity}
+.xr-photo img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.12);will-change:transform,filter}
 .xr-pin::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;background:linear-gradient(to top, var(--bg) 0%, rgba(11,10,8,.72) 38%, transparent 100%)}
 .xr-text{position:absolute;left:0;right:0;bottom:clamp(50px,9vh,100px);z-index:5;text-align:center;padding:0 var(--m);pointer-events:none}
 .xr-text .box{max-width:620px;margin:0 auto}
@@ -158,6 +160,15 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <section class="experience" id="experience01">
     <div class="xr-pin" id="xrPin01">
       <canvas id="duct-canvas01" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="xr-photo" id="xrPhoto01" aria-hidden="true">
+        <picture>
+          <source media="(max-width:760px)" type="image/avif" sizes="100vw" srcset="img/res-mobile-800.avif 800w, img/res-mobile-1400.avif 1400w">
+          <source media="(max-width:760px)" type="image/webp" sizes="100vw" srcset="img/res-mobile-800.webp 800w, img/res-mobile-1400.webp 1400w">
+          <source type="image/avif" sizes="100vw" srcset="img/res-desktop-1400.avif 1400w, img/res-desktop-2400.avif 2400w">
+          <source type="image/webp" sizes="100vw" srcset="img/res-desktop-1400.webp 1400w, img/res-desktop-2400.webp 2400w">
+          <img src="img/res-desktop-1400.webp" alt="" loading="lazy" decoding="async">
+        </picture>
+      </div>
       <div class="xr-text">
         <div class="box">
           <span class="k" id="xrTag01">Projeto · Residência</span>
@@ -177,6 +188,15 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <section class="experience" id="experience02">
     <div class="xr-pin" id="xrPin02">
       <canvas id="duct-canvas02" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="xr-photo" id="xrPhoto02" aria-hidden="true">
+        <picture>
+          <source media="(max-width:760px)" type="image/avif" sizes="100vw" srcset="img/apt-mobile-800.avif 800w, img/apt-mobile-1400.avif 1400w">
+          <source media="(max-width:760px)" type="image/webp" sizes="100vw" srcset="img/apt-mobile-800.webp 800w, img/apt-mobile-1400.webp 1400w">
+          <source type="image/avif" sizes="100vw" srcset="img/apt-desktop-1400.avif 1400w, img/apt-desktop-2400.avif 2400w">
+          <source type="image/webp" sizes="100vw" srcset="img/apt-desktop-1400.webp 1400w, img/apt-desktop-2400.webp 2400w">
+          <img src="img/apt-desktop-1400.webp" alt="" loading="lazy" decoding="async">
+        </picture>
+      </div>
       <div class="xr-text">
         <div class="box">
           <span class="k" id="xrTag02">Projeto · Apartamento</span>
@@ -196,6 +216,15 @@ img{display:block;width:100%;height:100%;object-fit:cover}
   <section class="experience" id="experience03">
     <div class="xr-pin" id="xrPin03">
       <canvas id="duct-canvas03" class="duct-canvas" aria-hidden="true"></canvas>
+      <div class="xr-photo" id="xrPhoto03" aria-hidden="true">
+        <picture>
+          <source media="(max-width:760px)" type="image/avif" sizes="100vw" srcset="img/corp-mobile-800.avif 800w, img/corp-mobile-1400.avif 1400w">
+          <source media="(max-width:760px)" type="image/webp" sizes="100vw" srcset="img/corp-mobile-800.webp 800w, img/corp-mobile-1400.webp 1400w">
+          <source type="image/avif" sizes="100vw" srcset="img/corp-desktop-1400.avif 1400w, img/corp-desktop-2400.avif 2400w">
+          <source type="image/webp" sizes="100vw" srcset="img/corp-desktop-1400.webp 1400w, img/corp-desktop-2400.webp 2400w">
+          <img src="img/corp-desktop-1400.webp" alt="" loading="lazy" decoding="async">
+        </picture>
+      </div>
       <div class="xr-text">
         <div class="box">
           <span class="k" id="xrTag03">Projeto · Corporativo</span>
@@ -869,6 +898,8 @@ function initXrayExperience(){
       try{
         var isMobile = matchMedia('(max-width:760px)').matches;
         var canvas = document.getElementById('duct-canvas'+cfg.id);
+        var photoEl = document.getElementById('xrPhoto'+cfg.id);
+        var photoImg = photoEl ? photoEl.querySelector('img') : null;
         var tagEl = document.getElementById('xrTag'+cfg.id);
         var lineEl = document.getElementById('xrLine'+cfg.id);
         var cueEl = document.getElementById('xrCue'+cfg.id);
@@ -956,6 +987,22 @@ function initXrayExperience(){
 
           setPhase(p < 0.5 ? 0 : 1);
           cueEl.style.opacity = p > 0.02 ? 0 : 0.85;
+
+          /* transição cinematográfica final: a cena 3D perde foco e some
+             (blur + dissolve) enquanto o ambiente fotorrealista assume,
+             ainda com um leve settle de zoom e grade de cor — nunca um
+             corte seco nem um fade plano. */
+          if(photoEl){
+            var photoT = smooth(p, 0.84, 1);
+            photoEl.style.opacity = photoT;
+            if(photoImg){
+              photoImg.style.transform = 'scale('+(1.12-0.12*photoT)+')';
+              photoImg.style.filter = 'brightness('+(0.86+0.14*photoT)+') saturate('+(0.88+0.12*photoT)+')';
+            }
+            canvas.style.opacity = 1-photoT;
+            canvas.style.filter = photoT>0 ? 'blur('+(photoT*9)+'px)' : 'none';
+          }
+
           renderer.render(scene, camera);
         }
 
