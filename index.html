@@ -468,10 +468,10 @@ function initXrayExperience(){
       return;
     }
 
-    /* estágio "resultado" (foto) usado como retrato estático quando o
-       movimento está reduzido — o duto é a etapa técnica, não o resultado */
-    var resultIdx = 0;
-    for(var ri=0; ri<n; ri++){ if(!layerVideos[ri]){ resultIdx = ri; break; } }
+    /* último estágio = o ambiente acabado (o "resultado"); os anteriores são
+       a etapa técnica ("projeto") — usado como retrato estático quando o
+       movimento está reduzido */
+    var resultIdx = n-1;
 
     if(reduceMotion){
       showStatic(resultIdx);
@@ -484,7 +484,7 @@ function initXrayExperience(){
 
     function setPhase(idx){
       if(!tagEl) return;
-      var phase = idx < Math.ceil(n/2) ? 0 : 1;
+      var phase = idx < n-1 ? 0 : 1;
       tagEl.style.opacity = 0;
       lineEl.style.opacity = 0;
       setTimeout(function(){ setPhaseText(phase); }, 200);
@@ -568,11 +568,20 @@ function initXrayExperience(){
     }
 
     if('IntersectionObserver' in window){
+      /* debounce: em alguns navegadores mobile, a barra de endereço
+         recolhendo/aparecendo ou um pequeno reflow no carregamento faz a
+         proporção de interseção oscilar por uma fração de segundo — sem o
+         debounce isso reinicia o carrossel (start()) repetidamente e ele
+         nunca avança do 1º estágio */
+      var debounceTimer = null;
       new IntersectionObserver(function(entries){
-        var was = active;
         var vis = entries[0].isIntersecting;
-        if(vis && !was) start();
-        else if(!vis && was) stop();
+        if(debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function(){
+          debounceTimer = null;
+          if(vis && !active) start();
+          else if(!vis && active) stop();
+        }, 200);
       }, {threshold:0.1}).observe(expEl);
     } else {
       start();
