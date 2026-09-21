@@ -63,7 +63,6 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .xr-photo-layer{position:absolute;inset:0;opacity:0;will-change:opacity,-webkit-mask-image,mask-image}
 .xr-photo-layer picture, .xr-photo-layer img{display:block;width:100%;height:100%}
 .xr-photo-layer video{width:100%;height:100%;object-fit:cover;display:block;background:#0B0A08}
-.xr-cut{position:absolute;inset:0;background:#0B0A08;opacity:0;pointer-events:none;will-change:opacity}
 .xr-pin::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;background:linear-gradient(to top, var(--bg) 0%, rgba(11,10,8,.72) 38%, transparent 100%)}
 .xr-text{position:absolute;left:0;right:0;bottom:clamp(50px,9vh,100px);z-index:5;text-align:center;padding:0 var(--m);pointer-events:none}
 .xr-text .box{max-width:620px;margin:0 auto}
@@ -163,24 +162,14 @@ img{display:block;width:100%;height:100%;object-fit:cover}
     <div class="xr-pin" id="xrPin01">
       <div class="xr-photo" id="xrPhoto01" aria-hidden="true">
         <div class="xr-photo-layer" data-stage="1">
-          <video muted loop autoplay playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
+          <video muted playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="2">
-          <video muted loop autoplay playsinline preload="auto" poster="img/hvac02-1400.webp"><source src="video/hvac02.mp4" type="video/mp4"></video>
-        </div>
-        <div class="xr-photo-layer" data-stage="3">
-          <picture>
-            <source type="image/webp" sizes="100vw" srcset="img/difusor-linear-800.webp 800w, img/difusor-linear-1400.webp 1400w">
-            <img src="img/difusor-linear-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
-        </div>
-        <div class="xr-photo-layer" data-stage="4">
           <picture>
             <source type="image/webp" sizes="100vw" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w">
             <img src="img/sala-jantar-1400.webp" alt="" loading="lazy" decoding="async">
           </picture>
         </div>
-        <div class="xr-cut"></div>
       </div>
       <div class="xr-text">
         <div class="box">
@@ -411,33 +400,21 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 <script>
 /* ================= EXPERIÊNCIA "DO PROJETO À REALIZAÇÃO" ================= */
 /* Cada seção é um hero livre (não prende o scroll): vídeo(s)/foto do projeto
-   em autoplay. Com mais de um estágio, cada camada fica 100% opaca sozinha
-   (nunca duas ao mesmo tempo) e a troca acontece com um corte suave — um
-   breve fade para preto e de volta — em vez de um crossfade que misturaria
-   as duas imagens. A duração de cada estágio acompanha a duração real do
-   vídeo (ou um tempo fixo para foto), então cada vídeo termina exatamente
-   quando a troca acontece — sem "cortar" no meio. Ver mountAutoCarousel(). */
+   em autoplay. Com mais de um estágio, a troca é um crossfade curto e nítido
+   (sem blur/máscara) — uma transição real, não um corte abrupto. O avanço
+   para o próximo estágio é disparado pelo evento nativo "ended" do vídeo
+   (não por um tempo estimado), então o vídeo sempre termina de tocar do
+   início ao fim exatamente uma vez antes da troca — nunca reinicia sozinho
+   no meio da exibição. Ver mountAutoCarousel(). */
 function initXrayExperience(){
   var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function smooth(x,a,b){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
 
-  function showOnly(photoLayers, idx){
-    for(var i=0;i<photoLayers.length;i++){
-      var l = photoLayers[i];
-      l.style.opacity = (i===idx) ? 1 : 0;
-      l.style.filter = 'none';
-      l.style.webkitMaskImage = 'none';
-      l.style.maskImage = 'none';
-    }
-  }
-
-  /* ---------- motor da cena 100% em vídeo/foto: hero livre (sem prender o
+  /* ---------- motor da cena em vídeo/foto: hero livre (sem prender o
      scroll), autoplay. Com 1 estágio só, fica parado/assentado; com vários,
-     cicla entre eles com um corte suave (fade para preto), cada um exibido
-     pela sua própria duração — vídeos de dutos ("Projeto") seguidos de
-     fotos do ambiente pronto ("Resultado"), nunca dois estágios visíveis
-     ao mesmo tempo. */
+     alterna vídeo de duto ("Projeto") e foto do ambiente pronto
+     ("Resultado") com um crossfade curto entre eles. */
   function mountAutoCarousel(cfg){
     var expEl = document.getElementById('experience'+cfg.id);
     var photoEl = document.getElementById('xrPhoto'+cfg.id);
@@ -452,7 +429,6 @@ function initXrayExperience(){
     var photoLayers = photoEl.querySelectorAll('.xr-photo-layer');
     if(!photoLayers.length){ fallback(); return; }
 
-    var cutEl = photoEl.querySelector('.xr-cut');
     var tagEl = document.getElementById('xrTag'+cfg.id);
     var lineEl = document.getElementById('xrLine'+cfg.id);
     var n = photoLayers.length;
@@ -469,96 +445,131 @@ function initXrayExperience(){
       lineEl.style.opacity = 1;
     }
 
+    function setOpacity(idx, val){
+      var l = photoLayers[idx];
+      l.style.opacity = val;
+      l.style.filter = 'none';
+      l.style.webkitMaskImage = 'none';
+      l.style.maskImage = 'none';
+    }
+
+    function showStatic(idx){
+      for(var i=0;i<n;i++){ setOpacity(i, i===idx ? 1 : 0); }
+    }
+
     if(n<=1){
       /* estágio único = a foto já é o resultado pronto (não a etapa técnica) */
-      showOnly(photoLayers, 0);
-      if(cutEl) cutEl.style.opacity = 0;
+      showStatic(0);
       if(!reduceMotion && layerVideos[0]){ layerVideos[0].play().catch(function(){}); }
       setPhaseText(cfg.tags ? cfg.tags.length-1 : 0);
       return;
     }
+
+    /* estágio "resultado" (foto) usado como retrato estático quando o
+       movimento está reduzido — o duto é a etapa técnica, não o resultado */
+    var resultIdx = 0;
+    for(var ri=0; ri<n; ri++){ if(!layerVideos[ri]){ resultIdx = ri; break; } }
+
     if(reduceMotion){
-      showOnly(photoLayers, 0);
-      if(cutEl) cutEl.style.opacity = 0;
-      setPhaseText(0);
+      showStatic(resultIdx);
+      setPhaseText(cfg.tags ? cfg.tags.length-1 : 0);
       return;
     }
 
-    var fallbackDur = cfg.stageDuration || 5;
-    var durations = [];
-    for(var di=0; di<n; di++){ durations.push(fallbackDur); }
-    layerVideos.forEach(function(v, i){
-      if(!v) return;
-      if(v.duration){ durations[i] = v.duration; }
-      v.addEventListener('loadedmetadata', function(){ if(v.duration) durations[i] = v.duration; });
-    });
+    var dwellPhoto = cfg.stageDuration || 5; /* segundos que a foto fica exibida */
+    var transDur = cfg.transitionDuration || 0.9; /* duração do crossfade */
 
-    var curPhase = -1;
-    function setPhase(i){
-      if(i===curPhase || !tagEl) return;
-      curPhase = i;
+    function setPhase(idx){
+      if(!tagEl) return;
+      var phase = layerVideos[idx] ? 0 : 1;
       tagEl.style.opacity = 0;
       lineEl.style.opacity = 0;
-      setTimeout(function(){ setPhaseText(i); }, 200);
+      setTimeout(function(){ setPhaseText(phase); }, 200);
     }
 
-    var curActive = -1;
-    function enterStage(idx){
-      if(idx===curActive) return;
-      if(curActive>=0 && layerVideos[curActive]) layerVideos[curActive].pause();
-      curActive = idx;
-      showOnly(photoLayers, idx);
-      var v = layerVideos[idx];
+    var curActive = 0;
+    var raf = null, timer = null, active = false;
+
+    function clearPending(){
+      if(raf){ cancelAnimationFrame(raf); raf = null; }
+      if(timer){ clearTimeout(timer); timer = null; }
+    }
+
+    function crossfadeTo(nextIdx){
+      var fromIdx = curActive;
+      var v = layerVideos[nextIdx];
       if(v){
         try{ v.currentTime = 0; }catch(e){}
         v.play().catch(function(){});
       }
-      setPhase(idx < Math.ceil(n/2) ? 0 : 1);
-    }
-
-    var cutHalf = 0.22; /* segundos de meio-corte (fade pro preto e volta) */
-    function applyCut(bounds, total, t){
-      if(!cutEl) return;
-      var minD = total;
-      for(var k=0;k<n;k++){
-        var d = Math.abs(t-bounds[k]);
-        d = Math.min(d, total-d);
-        if(d<minD) minD = d;
+      var t0 = performance.now();
+      function step(){
+        if(!active) return;
+        var p = Math.min(1, (performance.now()-t0)/1000/transDur);
+        var e = smooth(p, 0, 1);
+        setOpacity(fromIdx, 1-e);
+        setOpacity(nextIdx, e);
+        if(p<1){ raf = requestAnimationFrame(step); }
+        else {
+          raf = null;
+          if(layerVideos[fromIdx]) layerVideos[fromIdx].pause();
+          curActive = nextIdx;
+          setPhase(nextIdx);
+          scheduleAdvance();
+        }
       }
-      cutEl.style.opacity = 1 - smooth(minD, 0, cutHalf);
+      raf = requestAnimationFrame(step);
     }
 
-    var start = performance.now();
-    var active = false;
-    function tick(){
-      if(!active) return;
-      var bounds = [0];
-      for(var i=0;i<n;i++) bounds.push(bounds[i]+durations[i]);
-      var total = bounds[n];
-      bounds.length = n;
-      var t = ((performance.now()-start)/1000) % total;
-      var idx = 0;
-      for(var li=n-1; li>=0; li--){ if(t>=bounds[li]){ idx = li; break; } }
-      enterStage(idx);
-      applyCut(bounds, total, t);
-      requestAnimationFrame(tick);
+    function scheduleAdvance(){
+      clearPending();
+      var nextIdx = (curActive+1) % n;
+      var v = layerVideos[curActive];
+      if(v){
+        var advanced = false;
+        function onEnded(){
+          if(advanced) return;
+          advanced = true;
+          v.removeEventListener('ended', onEnded);
+          crossfadeTo(nextIdx);
+        }
+        v.addEventListener('ended', onEnded);
+        var maxWait = (v.duration && isFinite(v.duration) ? v.duration : 6) + 3;
+        timer = setTimeout(function(){
+          if(advanced) return;
+          advanced = true;
+          v.removeEventListener('ended', onEnded);
+          crossfadeTo(nextIdx);
+        }, maxWait*1000);
+      } else {
+        timer = setTimeout(function(){ crossfadeTo(nextIdx); }, dwellPhoto*1000);
+      }
+    }
+
+    function start(){
+      active = true;
+      curActive = 0;
+      showStatic(0);
+      var v0 = layerVideos[0];
+      if(v0){ try{ v0.currentTime = 0; }catch(e){} v0.play().catch(function(){}); }
+      setPhase(0);
+      scheduleAdvance();
+    }
+    function stop(){
+      active = false;
+      clearPending();
+      if(layerVideos[curActive]) layerVideos[curActive].pause();
     }
 
     if('IntersectionObserver' in window){
       new IntersectionObserver(function(entries){
         var was = active;
-        active = entries[0].isIntersecting;
-        if(active && !was){
-          start = performance.now();
-          curActive = -1;
-          tick();
-        } else if(!active && was && curActive>=0 && layerVideos[curActive]){
-          layerVideos[curActive].pause();
-        }
+        var vis = entries[0].isIntersecting;
+        if(vis && !was) start();
+        else if(!vis && was) stop();
       }, {threshold:0.1}).observe(expEl);
     } else {
-      active = true;
-      tick();
+      start();
     }
   }
 
