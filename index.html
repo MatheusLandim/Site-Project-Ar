@@ -165,10 +165,13 @@ img{display:block;width:100%;height:100%;object-fit:cover}
           <video muted playsinline preload="auto" poster="img/hvac01-1400.webp"><source src="video/hvac01.mp4" type="video/mp4"></video>
         </div>
         <div class="xr-photo-layer" data-stage="2">
-          <picture>
-            <source type="image/webp" sizes="100vw" srcset="img/sala-jantar-800.webp 800w, img/sala-jantar-1400.webp 1400w">
-            <img src="img/sala-jantar-1400.webp" alt="" loading="lazy" decoding="async">
-          </picture>
+          <video muted playsinline preload="auto" poster="img/hvac02-1400.webp"><source src="video/hvac02.mp4" type="video/mp4"></video>
+        </div>
+        <div class="xr-photo-layer" data-stage="3">
+          <video muted playsinline preload="auto" poster="img/hvac03-1400.webp"><source src="video/hvac03.mp4" type="video/mp4"></video>
+        </div>
+        <div class="xr-photo-layer" data-stage="4">
+          <video muted playsinline preload="auto" poster="img/hvac04-1400.webp"><source src="video/hvac04.mp4" type="video/mp4"></video>
         </div>
       </div>
       <div class="xr-text">
@@ -481,7 +484,7 @@ function initXrayExperience(){
 
     function setPhase(idx){
       if(!tagEl) return;
-      var phase = layerVideos[idx] ? 0 : 1;
+      var phase = idx < Math.ceil(n/2) ? 0 : 1;
       tagEl.style.opacity = 0;
       lineEl.style.opacity = 0;
       setTimeout(function(){ setPhaseText(phase); }, 200);
